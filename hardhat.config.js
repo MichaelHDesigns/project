@@ -16,14 +16,9 @@ module.exports = {
       allowUnlimitedContractSize: true,
     },
   },
-  solidity: {
-    compilers: [{ version: "0.8.17", settings: {
-      optimizer: {
-        runs: 200,
-        enabled: true
-      }
-    } }, { version: "0.8.17"}],
-  },
+
+ solidity: "0.8.0",
+
   mocha: {
     timeout: 300000, // 300 seconds max
   },
