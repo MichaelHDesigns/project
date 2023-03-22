@@ -22,7 +22,7 @@ module.exports = {
         runs: 200,
         enabled: true
       }
-    } }, { version: "0.8.17"}],
+    } }, { version: "0.8.7"}],
   },
   mocha: {
     timeout: 300000, // 300 seconds max
