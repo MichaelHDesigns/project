@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import ProfileContract from './contracts/Profile.sol';
+import './src/css/Profile.css';
 
 const Profile = ({ address }) => {
   const [profileImage, setProfileImage] = useState('');

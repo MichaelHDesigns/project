@@ -1,0 +1,56 @@
+/* EditProfile.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.form input[type="text"] {
+  padding: 5px;
+  margin: 5px 0;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.form label {
+  margin: 10px 0 5px 0;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.form button {
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2196F3;
+  color: #fff;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+}
+
+.form button:hover {
+  background-color: #0c7cd5;
+}
+
+.message {
+  margin-top: 20px;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.error {
+  color: red;
+}
