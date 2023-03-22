@@ -9,7 +9,6 @@ import CreateBulkNFT from './contracts/CreateBulkNFT.sol';
 import Web3 from 'web3';
 
 // Import Pinata SDK for uploading files to IPFS
-import "@pinata/sdk";
 
 contract CreateBulkNFT is ERC721 {
     using Counters for Counters.Counter;
