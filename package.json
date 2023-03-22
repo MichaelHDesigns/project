@@ -1,24 +1,21 @@
 {
   "name": "my-project",
   "version": "1.0.0",
-  "description": "My cool project",
-  "main": "index.js",
+  "description": "My Hardhat project",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "clean": "rm -rf build",
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy:localhost": "npx hardhat run --network localhost scripts/deploy.js"
   },
   "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-router-dom": "^5.2.0",
-    "web3": "^1.5.1",
-    "axios": "^0.21.1",
-    "ethers": "^5.4.5",
-    "bootstrap": "^5.1.0"
-  },
-  "devDependencies": {
-    "react-scripts": "^4.0.3"
+    "@openzeppelin/contracts": "^4.4.0",
+    "ethers": "^5.4.4",
+    "hardhat": "^2.9.0",
+    "hardhat-deploy": "^0.10.0",
+    "hardhat-deploy-ethers": "^2.0.1",
+    "hardhat-deploy-solc": "^2.0.0",
+    "hardhat-ethers": "^2.0.1",
+    "hardhat-waffle": "^2.0.1"
   }
 }
