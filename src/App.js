@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Create_Account from "./contracts/Create_Account";
-import Dashboard from "./contracts/Dashboard";
-import Edit_Profile from "./contracts/Edit_Profile";
-import LandingPage from "./contracts/LandingPage";
+import Create_Account from "./components/Create_Account";
+import Dashboard from "./components/Dashboard";
+import Edit_Profile from "./components/Edit_Profile";
+import LandingPage from "./components/LandingPage";
 import Login from "./js/Login";
-import Profile from "./contracts/Profile";
+import Profile from "./components/Profile";
 import "./src/css/App.css";
 import "./src/css/index.css";
 
