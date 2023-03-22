@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Web3 from "web3";
 import AuthToken from "./contracts/AuthToken.json";
-import '../css/Login.css';
+import './css/Login.css';
 
 function Login() {
   const [loading, setLoading] = useState(false);
