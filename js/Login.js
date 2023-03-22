@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Web3 from "web3";
 import AuthToken from "./contracts/AuthToken.json";
-import '../css/Login.css';
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -38,12 +37,22 @@ function Login() {
   }
 
   return (
-    <div className="login-container">
+    <div style={{ 
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh"
+    }}>
       <h1>My Dapp Login</h1>
-      <button onClick={handleLogin} disabled={loading}>
+      <button style={{ 
+        margin: "16px",
+        padding: "8px 16px",
+        fontSize: "1rem"
+      }} onClick={handleLogin} disabled={loading}>
         {loading ? "Loading..." : "Log In"}
       </button>
-      {error && <div className="error">{error}</div>}
+      {error && <div style={{ color: "red" }}>{error}</div>}
     </div>
   );
 }
