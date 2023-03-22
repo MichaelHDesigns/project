@@ -17,12 +17,13 @@ module.exports = {
     },
   },
   solidity: {
-    compilers: [{ version: "0.8.17", settings: {
-      optimizer: {
-        runs: 200,
-        enabled: true
-      }
-    } }, { version: "0.8.7"}],
+    compilers: {
+      version: "0.8.17",
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200,
+        },
   },
   mocha: {
     timeout: 300000, // 300 seconds max
