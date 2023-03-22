@@ -1,23 +1,54 @@
 require("@nomiclabs/hardhat-ethers");
+require("@nomiclabs/hardhat-waffle");
+require("dotenv").config();
 
 module.exports = {
+  defaultNetwork: "hardhat",
   networks: {
-    altcoinchain: {
-      url: "https://rpc0.altcoinchain.org/rpc",
+    localhost: {
       chainId: 2330,
-      accounts: [
-        "0x75977130c549b04599bd654612e82519f7227d0ed6ea9e45670708d71d5789f6"
-      ],
-      gas: "auto"
-    }
+      blockConfirmations: 1,
+      allowUnlimitedContractSize: true,
+    },
+    hardhat: {
+      chainId: 2330,
+      blockConfirmations: 1,
+      allowUnlimitedContractSize: true,
+    },
+    goerli: {
+      chainId: 2330,
+      blockConfirmations: 1,
+      url: process.env.GOERLI_RPC_URL,
+      accounts: [process.env.PRIVATE_KEY],
+      allowUnlimitedContractSize: true,
+    },
   },
   solidity: {
-    version: "0.8.9",
-    settings: {
+    compilers: [{ version: "0.8.4", settings: {
       optimizer: {
-        enabled: true,
-        runs: 200
+        runs: 200,
+        enabled: true
       }
-    }
-  }
+    } }, { version: "0.8.17"}],
+  },
+  mocha: {
+    timeout: 300000, // 300 seconds max
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
+  gasReporter: {
+    enabled: true,
+    currency: "USD",
+    gasPrice: 200,
+    gas: 200000,
+  },
+  namedAccounts: {
+    deployer: {
+      default: 0,
+    },
+    player: {
+      default: 1,
+    },
+  },
 };
