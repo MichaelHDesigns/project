@@ -15,13 +15,6 @@ module.exports = {
       blockConfirmations: 1,
       allowUnlimitedContractSize: true,
     },
-    goerli: {
-      chainId: 2330,
-      blockConfirmations: 1,
-      url: process.env.GOERLI_RPC_URL,
-      accounts: [process.env.PRIVATE_KEY],
-      allowUnlimitedContractSize: true,
-    },
   },
   solidity: {
     compilers: [{ version: "0.8.4", settings: {
