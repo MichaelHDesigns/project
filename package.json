@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@openzeppelin/contracts": "^4.8.2",
     "@truffle/hdwallet-provider": "^1.4.3",
     "axios": "^0.23.0",
     "dotenv": "16.0.3",
@@ -13,7 +12,9 @@
     "web3": "^1.5.2"
   },
   "devDependencies": {
-    "hardhat": "^2.8.4",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "@openzeppelin/contracts": "^4.8.1",
+    "hardhat": "^2.12.6"
     "hardhat-deploy": "0.11.25",
     "hardhat-deploy-ethers": "0.3.0-beta.13",
     "@nomiclabs/hardhat-waffle": "2.0.5",
