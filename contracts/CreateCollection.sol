@@ -3,8 +3,6 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import Web3 from 'web3';
-
 
 interface IPinata {
     function pinJSONToIPFS(
@@ -48,12 +46,10 @@ contract CreateCollection is ERC721, Ownable {
         address to,
         uint256[] memory tokenIds,
         NFTMetadata[] memory metadatas,
-        string[] memory pinataApiKeys,
-        bytes[] memory pinataSecretApiKeys,
         bytes[] memory pinataMetadata
     ) external onlyOwner {
         require(tokenIds.length == metadatas.length, "TokenId and metadata array length mismatch");
-        require(pinataApiKeys.length == pinataSecretApiKeys.length && pinataApiKeys.length == pinataMetadata.length, "Invalid Pinata API keys or metadata");
+        require(tokenIds.length == pinataMetadata.length, "Invalid Pinata metadata array length");
         for (uint256 i = 0; i < tokenIds.length; i++) {
             _safeMint(to, tokenIds[i]);
             _tokenMetadata[tokenIds[i]] = metadatas[i];
