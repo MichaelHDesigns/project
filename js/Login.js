@@ -17,10 +17,9 @@ function Login() {
 
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = AuthToken.networks[networkId];
-      const contract = new web3.eth.Contract(
-        AuthToken.abi,
-        deployedNetwork && deployedNetwork.address
-      );
+      const contractAddress = deployedNetwork && deployedNetwork.address;
+
+      const contract = new web3.eth.Contract(AuthToken.abi, contractAddress);
 
       await contract.methods.login().send({ from: accounts[0] });
 
@@ -37,19 +36,25 @@ function Login() {
   }
 
   return (
-    <div style={{ 
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh"
-    }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
       <h1>My Dapp Login</h1>
-      <button style={{ 
-        margin: "16px",
-        padding: "8px 16px",
-        fontSize: "1rem"
-      }} onClick={handleLogin} disabled={loading}>
+      <button
+        style={{
+          margin: "16px",
+          padding: "8px 16px",
+          fontSize: "1rem",
+        }}
+        onClick={handleLogin}
+        disabled={loading}
+      >
         {loading ? "Loading..." : "Log In"}
       </button>
       {error && <div style={{ color: "red" }}>{error}</div>}
