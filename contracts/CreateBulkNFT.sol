@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@nomiclabs/buidler/console.sol";
-import CreateBulkNFT from './contracts/CreateBulkNFT.sol';
 import Web3 from 'web3';
 
 // Import Pinata SDK for uploading files to IPFS
