@@ -8,8 +8,8 @@ import Login from "./js/Login";
 import Profile from "./components/Profile";
 import CreateNFTPage from "./components/CreateNFTPage";
 import Marketplace from "./components/Marketplace";
-import "./src/css/App.css";
-import "./src/css/index.css";
+import './src/css/App.css';
+import './src/css/index.css';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
