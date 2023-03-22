@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
 import { ethers } from 'ethers';
 import ProfileContract from './contracts/Profile.sol';
 import './src/css/Profile.css';
@@ -45,6 +47,12 @@ const Profile = ({ address }) => {
   };
 
   return (
+    <div>
+      <h2>Profile</h2>
+      <p>This is your profile page.</p>
+      <Link to="/edit_profile"><button>Edit Profile</button></Link>
+    </div>
+    <br><br>
     <div>
       <img src={`https://ipfs.io/ipfs/${profileImage}`} alt="Profile" />
       <h1>{name}</h1>

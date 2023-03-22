@@ -6,6 +6,8 @@ import Edit_Profile from "./components/Edit_Profile";
 import LandingPage from "./components/LandingPage";
 import Login from "./js/Login";
 import Profile from "./components/Profile";
+import CreateNFTPage from "./components/CreateNFTPage";
+import Marketplace from "./components/Marketplace";
 import "./src/css/App.css";
 import "./src/css/index.css";
 
@@ -24,8 +26,13 @@ function App() {
           />
           <Route exact path="/dashboard" component={Dashboard} />
           <Route exact path="/create_account" component={Create_Account} />
-          <Route exact path="/profile" component={Profile} />
-          <Route exact path="/edit_profile" component={Edit_Profile} />
+          <Route exact path="/profile">
+            <Profile setLoggedIn={setLoggedIn}>
+              <Edit_Profile setLoggedIn={setLoggedIn} />
+            </Profile>
+          </Route>
+          <Route exact path="/create_nft" component={CreateNFTPage} />
+          <Route exact path="/marketplace" component={Marketplace} />
         </Switch>
       </div>
     </Router>
