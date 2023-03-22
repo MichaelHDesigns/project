@@ -1,5 +1,4 @@
 const hre = require("hardhat");
-const fs = require("fs");
 
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
@@ -31,25 +30,12 @@ async function main() {
   await collection.deployed();
   await marketplace.deployed();
 
-  console.log("Contracts deployed to:", {
-    Token: token.address,
-    CreateAccount: account.address,
-    CreateNFT: nft.address,
-    CreateBulkNFT: bulkNft.address,
-    CreateCollection: collection.address,
-    Marketplace: marketplace.address,
-  });
-
-  // Write contract addresses to a JSON file for later use
-  const addresses = {
-    token: token.address,
-    account: account.address,
-    nft: nft.address,
-    bulkNft: bulkNft.address,
-    collection: collection.address,
-    marketplace: marketplace.address,
-  };
-  fs.writeFileSync("addresses.json", JSON.stringify(addresses, null, 2));
+  console.log("Token deployed to:", token.address);
+  console.log("CreateAccount deployed to:", account.address);
+  console.log("CreateNFT deployed to:", nft.address);
+  console.log("CreateBulkNFT deployed to:", bulkNft.address);
+  console.log("CreateCollection deployed to:", collection.address);
+  console.log("Marketplace deployed to:", marketplace.address);
 }
 
 main().then(() => process.exit(0)).catch(error => {
