@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Create_Account from "../contracts/Create_Account";
-import "./src/css/CreateAccount.css";
+import './src/css/CreateAccount.css';
 
 function CreateAccount() {
   const [web3, setWeb3] = useState(null);
