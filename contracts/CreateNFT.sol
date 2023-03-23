@@ -1,50 +1,112 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
+contract CreateNFT is ERC721 {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
 
-contract CreateNFT is ERC721, Ownable {
-    string public baseURI;
-    address public pinataAddress;
-    string public pinataApiKey;
-    string public pinataSecretApiKey;
+    mapping(string => bool) _hashExists;
 
-    constructor(string memory _name, string memory _symbol, string memory _baseURI, address _pinataAddress, string memory _pinataApiKey, string memory _pinataSecretApiKey) ERC721(_name, _symbol) {
-        baseURI = _baseURI;
-        pinataAddress = _pinataAddress;
-        pinataApiKey = _pinataApiKey;
-        pinataSecretApiKey = _pinataSecretApiKey;
+    constructor() ERC721("NFT", "NFT") {}
+
+    function mintNFT(address recipient, string memory tokenURI) public {
+        require(!_hashExists[tokenURI], "Token URI already exists");
+        _tokenIds.increment();
+        uint256 newItemId = _tokenIds.current();
+        _safeMint(recipient, newItemId);
+        _setTokenURI(newItemId, tokenURI);
+        _hashExists[tokenURI] = true;
     }
 
-    function _baseURI() internal view override returns (string memory) {
-        return baseURI;
+    function bulkMintNFT(address recipient, string[] memory tokenURIs) public {
+        for (uint256 i = 0; i < tokenURIs.length; i++) {
+            require(!_hashExists[tokenURIs[i]], "Token URI already exists");
+            _tokenIds.increment();
+            uint256 newItemId = _tokenIds.current();
+            _safeMint(recipient, newItemId);
+            _setTokenURI(newItemId, tokenURIs[i]);
+            _hashExists[tokenURIs[i]] = true;
+        }
     }
 
-    function setBaseURI(string memory _newBaseURI) external onlyOwner {
-        baseURI = _newBaseURI;
+    function mintNFTCollection(address recipient, string[] memory tokenURIs) public {
+        require(tokenURIs.length > 1, "Token URI list is too short");
+        string memory metadata = generateMetadata(tokenURIs);
+        _tokenIds.increment();
+        uint256 newItemId = _tokenIds.current();
+        _safeMint(recipient, newItemId);
+        _setTokenURI(newItemId, metadata);
     }
 
-    function setPinataAddress(address _newPinataAddress) external onlyOwner {
-        pinataAddress = _newPinataAddress;
+function generateMetadata(string[] memory tokenURIs) private returns (string memory) {
+    string memory metadata = "";
+    metadata = string(abi.encodePacked('{"name": "NFT Collection", "description": "A collection of NFTs", "image": "', tokenURIs[0], '", "attributes": ['));
+    for (uint256 i = 0; i < tokenURIs.length; i++) {
+        metadata = string(abi.encodePacked(metadata, '{"trait_type": "Token URI", "value": "', tokenURIs[i], '"}'));
+        if (i < tokenURIs.length - 1) {
+            metadata = string(abi.encodePacked(metadata, ','));
+        }
     }
-
-    function setPinataApiKey(string memory _newPinataApiKey) external onlyOwner {
-        pinataApiKey = _newPinataApiKey;
-    }
-
-    function setPinataSecretApiKey(string memory _newPinataSecretApiKey) external onlyOwner {
-        pinataSecretApiKey = _newPinataSecretApiKey;
-    }
-
-    function mintNFT(string memory _tokenURI) external {
-        require(pinataAddress != address(0), "Pinata address is not set");
-        require(bytes(pinataApiKey).length > 0, "Pinata API key is not set");
-        require(bytes(pinataSecretApiKey).length > 0, "Pinata Secret API key is not set");
-        
-        uint256 tokenId = totalSupply() + 1;
-        _safeMint(msg.sender, tokenId);
-        _setTokenURI(tokenId, _tokenURI);
-    }
+    metadata = string(abi.encodePacked(metadata, ']}'));
+    return metadata;
 }
+
+function uploadMetadataToPinata(string memory metadata, string memory pinataApiKey, string memory pinataSecretApiKey) public {
+    string memory apiUrl = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
+
+    bytes memory jsonMetadataBytes = bytes(metadata);
+    string memory jsonEncodedMetadata = Base64.encode(jsonMetadataBytes);
+    bytes memory jsonEncodedMetadataBytes = bytes(jsonEncodedMetadata);
+
+    string memory boundary = "-----nft-storage-boundary-----";
+    bytes memory requestBody = abi.encodePacked(
+        "--", boundary, "\r\n",
+        'Content-Disposition: form-data; name="file"; filename="metadata.json"\r\n',
+        "Content-Type: application/json\r\n\r\n",
+        jsonEncodedMetadataBytes, "\r\n",
+        "--", boundary, "--\r\n"
+    );
+
+    bytes32 contentHash = keccak256(requestBody);
+    string memory contentHashString = Base58.encode(contentHash);
+
+    bytes memory headers = abi.encodePacked(
+        'Content-Type: multipart/form-data; boundary=', boundary, "\r\n",
+        'pinata_api_key: ', pinataApiKey, "\r\n",
+        'pinata_secret_api_key: ', pinataSecretApiKey, "\r\n",
+        'Content-Length: ', uint2str(requestBody.length), "\r\n"
+    );
+
+    (bool success, bytes memory returnData) = address(0x0000000000000000000000000000000000000001).call{gas: 3000000, value: msg.value}(
+        abi.encodeWithSignature("post(string,bytes,string)", apiUrl, requestBody, headers)
+    );
+
+    require(success, "Pinata API call failed");
+    emit PinataMetadataUploaded(contentHashString);
+}
+
+function uint2str(uint256 _i) internal pure returns (string memory) {
+    if (_i == 0) {
+        return "0";
+    }
+    uint256 j = _i;
+    uint256 length;
+    while (j != 0) {
+        length++;
+        j /= 10;
+    }
+    bytes memory bstr = new bytes(length);
+    uint256 k = length;
+    while (_i != 0) {
+        k = k-1;
+        uint8 temp = uint8(48 + _i % 10);
+        bytes1 b1 = bytes1(temp);
+        bstr[k] = b1;
+        _i /= 10;
+    }
+    return string(bstr);
+}
+
+event PinataMetadataUploaded(string contentHash);
