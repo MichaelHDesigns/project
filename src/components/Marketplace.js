@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Marketplace } from "./contracts/Marketplace.sol";
+import React, { useState } from 'react';
+import { Marketplace } from './contracts/Marketplace.sol';
 import './src/css/Marketplace.css';
 
 function MarketplacePage() {
