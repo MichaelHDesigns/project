@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 
-const account = 'your_address'; // or initialize with null, if you want to set it later in your code
+const account = '0x114A612929c451417E28F0Bf9Af3C77c39fd1499'; // or initialize with null, if you want to set it later in your code
 
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
