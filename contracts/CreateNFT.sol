@@ -25,11 +25,11 @@ contract CreateNFT is ERC721 {
         }
     }
 
-    function totalSupply() public view returns (uint256) {
-        return ERC721.totalSupply();
-    }
-
     function _baseURI() internal view virtual override returns (string memory) {
         return "https://www.example.com/";
+    }
+
+    function totalSupply() public view override returns (uint256) {
+        return super.totalSupply();
     }
 }
