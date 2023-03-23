@@ -11,7 +11,7 @@ async function main() {
   const token = await tokenFactory.deploy();
   
   const accountFactory = await hre.ethers.getContractFactory("Create_Account");
-  const login = await loginFactory.deploy(account.address);
+  const login = await accountFactory.deploy(account.address);
   const account = await accountFactory.deploy(login.address, profile.address, { from: deployer });
 
 
