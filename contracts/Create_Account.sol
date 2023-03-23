@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "../js/Login.jsx";
-import "./Profile.sol";
+import '../js/Login';
+import './Profile.sol';
 
 contract Create_Account is Ownable, Pausable {
     Login public login;
