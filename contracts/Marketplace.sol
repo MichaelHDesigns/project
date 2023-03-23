@@ -4,8 +4,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-contract Marketplace is Ownable {
+contract Marketplace is Ownable, ERC721Holder {
     struct Listing {
         uint256 tokenId;
         address seller;
@@ -20,9 +21,9 @@ contract Marketplace is Ownable {
     event NFTSold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price);
 
     function listNFT(uint256 tokenId, uint256 price) external {
-    require(msg.sender == IERC721(owner(tokenId)), "Marketplace: must be owner to list NFT");
-    _listings[tokenId] = Listing(tokenId, msg.sender, price, true);
-    emit NFTListed(tokenId, msg.sender, price);
+        require(msg.sender == ownerOf(tokenId), "Marketplace: must be owner to list NFT");
+        _listings[tokenId] = Listing(tokenId, msg.sender, price, true);
+        emit NFTListed(tokenId, msg.sender, price);
     }
 
     function unlistNFT(uint256 tokenId) external {
@@ -37,7 +38,7 @@ contract Marketplace is Ownable {
         require(msg.value == _listings[tokenId].price, "Marketplace: incorrect price");
         address payable seller = payable(_listings[tokenId].seller);
         delete _listings[tokenId];
-       IERC721(owner(tokenId)).safeTransferFrom(seller, msg.sender, tokenId);
+        safeTransferFrom(seller, msg.sender, tokenId);
         seller.transfer(msg.value);
         emit NFTSold(tokenId, seller, msg.sender, msg.value);
     }
