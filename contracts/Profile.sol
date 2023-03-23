@@ -84,4 +84,12 @@ contract Profile {
         );
         userProfiles[msg.sender].name = newName;
     }
+
+    function setBio(string memory newBio) public {
+        require(
+            authToken.balanceOf(msg.sender) > 0,
+            "Not authenticated"
+        );
+        userProfiles[msg.sender].bio = newBio;
+    }
 }
