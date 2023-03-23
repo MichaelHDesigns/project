@@ -4,10 +4,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@nomiclabs/buidler/console.sol";
-
-
-// Import Pinata SDK for uploading files to IPFS
+import { PinataSDK } from "@pinata/sdk";
 
 contract CreateBulkNFT is ERC721 {
     using Counters for Counters.Counter;
@@ -18,13 +15,13 @@ contract CreateBulkNFT is ERC721 {
     string private pinataSecretApiKey;
 
     // Pinata SDK object
-    Pinata private pinata;
+    PinataSDK private pinata;
 
     constructor(string memory _pinataApiKey, string memory _pinataSecretApiKey) ERC721("BulkNFT", "BNFT") {
         pinataApiKey = _pinataApiKey;
         pinataSecretApiKey = _pinataSecretApiKey;
 
-        pinata = new Pinata();
+        pinata = new PinataSDK({ apiKey: pinataApiKey, apiSecret: pinataSecretApiKey });
     }
 
     function mintBulkNFT(uint256 numNFTs, string[] calldata metadata) public {
@@ -38,7 +35,11 @@ contract CreateBulkNFT is ERC721 {
             _mint(msg.sender, newTokenId);
 
             // Upload metadata to IPFS using Pinata
-            string memory ipfsHash = pinata.pinJSONToIPFS(msg.sender, pinataApiKey, pinataSecretApiKey, metadata[i]);
+            bytes memory metadataBytes = bytes(metadata[i]);
+            (bool success, bytes memory result) = pinata.pinJSONToIPFS(msg.sender, metadataBytes);
+            require(success, "Failed to upload metadata to Pinata");
+            string memory ipfsHash = abi.decode(result, (string));
+
             emit MetadataUploaded(msg.sender, newTokenId, ipfsHash);
         }
     }
