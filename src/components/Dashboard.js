@@ -30,16 +30,12 @@ function DashboardComponent(props) {
   useEffect(() => {
     async function fetchUserProfile() {
       if (dashboardContract) {
-        const userAddress = await dashboardContract.getUserAddress();
-        const userName = await dashboardContract.getUserName();
-        const userEmail = await dashboardContract.getUserEmail();
-        const userBio = await dashboardContract.getUserBio();
-        const profileImageUrl = await dashboardContract.getProfileImageUrl();
-        setUserAddress(userAddress);
-        setUserName(userName);
-        setUserEmail(userEmail);
-        setUserBio(userBio);
-        setProfileImageUrl(profileImageUrl);
+        const result = await dashboardContract.viewProfile();
+        setUserAddress(result[0]);
+        setUserName(result[1]);
+        setUserEmail(result[2]);
+        setUserBio(result[3]);
+        setProfileImageUrl(result[4]);
       }
     }
     fetchUserProfile();
