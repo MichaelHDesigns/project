@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
 import "./Profile.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+
 
 contract Edit_Profile {
     Profile public profileContract;
