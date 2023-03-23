@@ -5,7 +5,7 @@ import "./Profile.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
-contract Edit_Profile {
+contract ProfileEditor {
     Profile public profileContract;
 
     constructor(Profile _profileContract) {
@@ -25,4 +25,3 @@ contract Edit_Profile {
         string memory ipfsHash = IERC721Metadata(nftContract).tokenURI(tokenId);
         profileContract.setProfileImage(ipfsHash);
     }
-}
