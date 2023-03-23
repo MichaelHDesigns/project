@@ -37,7 +37,7 @@ contract Marketplace is Ownable {
         require(msg.value == _listings[tokenId].price, "Marketplace: incorrect price");
         address payable seller = payable(_listings[tokenId].seller);
         delete _listings[tokenId];
-        ERC721(owner(tokenId)).safeTransferFrom(seller, msg.sender, tokenId);
+       IERC721(ownerOf(tokenId)).safeTransferFrom(seller, msg.sender, tokenId);
         seller.transfer(msg.value);
         emit NFTSold(tokenId, seller, msg.sender, msg.value);
     }
