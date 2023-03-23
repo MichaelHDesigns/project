@@ -1,5 +1,7 @@
 const hre = require("hardhat");
 
+const account = 'your_address'; // or initialize with null, if you want to set it later in your code
+
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
 
@@ -11,9 +13,6 @@ async function main() {
   const accountFactory = await hre.ethers.getContractFactory("Create_Account");
   const account = await accountFactory.deploy(token.address);
   
-  const loginFactory = await hre.ethers.getContractFactory("Login");
-  const login = await loginFactory.deploy(account.address);
-
   const profileFactory = await hre.ethers.getContractFactory("Profile");
   const profile = await profileFactory.deploy(account.address);
 
@@ -26,6 +25,9 @@ async function main() {
   const marketplaceFactory = await hre.ethers.getContractFactory("Marketplace");
   const marketplace = await marketplaceFactory.deploy(account.address, token.address);
   
+  const loginFactory = await hre.ethers.getContractFactory("Login");
+  const login = await loginFactory.deploy(account.address);
+
   const editprofileFactory = await hre.ethers.getContractFactory("ProfileEditor");
   const editprofile = await editprofileFactory.deploy(account.address, token.address);
 
