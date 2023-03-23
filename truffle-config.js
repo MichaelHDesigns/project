@@ -15,7 +15,7 @@ module.exports = {
     solc: {
       version: "0.8.0"
     }
-  }
+  },
   contracts_build_directory: './build/contracts',
 
   plugins: [
