@@ -4,12 +4,13 @@ import Create_Account from './components/Create_Account';
 import Dashboard from './components/Dashboard';
 import Edit_Profile from './components/Edit_Profile';
 import LandingPage from './components/LandingPage';
-import Login from '../js/Login';
+import Login from './components/Login';
 import Profile from './components/Profile';
 import CreateNFTPage from './components/CreateNFTPage';
 import Marketplace from './components/Marketplace';
-import './src/css/App.css';
-import './src/css/index.css';
+import './css/App.css';
+import './css/index.css';
+
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
