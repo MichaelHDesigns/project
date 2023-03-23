@@ -3,57 +3,117 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract CreateNFT is ERC721, Ownable {
+contract CreateNFT is ERC721 {
     using SafeMath for uint256;
-    
+
+    // Base URI
     string private _baseURI;
-    uint256 private _tokenIdTracker;
+
+    // Max tokens
     uint256 private _maxTokens;
-    uint256 private _tokenPrice;
+
+    // Price
+    uint256 private _price;
+
+    // Sale status
     bool private _saleActive;
-    
-    constructor(string memory name, string memory symbol, string memory baseURI, uint256 maxTokens, uint256 tokenPrice) ERC721(name, symbol) {
-        _baseURI = baseURI;
-        _maxTokens = maxTokens;
-        _tokenPrice = tokenPrice;
+
+    // Total supply
+    uint256 private _totalSupply;
+
+    // Event for token creation
+    event NFTCreated(uint256 tokenId);
+
+    constructor(
+        string memory baseURI_,
+        uint256 maxTokens_,
+        uint256 price_
+    ) ERC721("MyNFT", "MNFT") {
+        _baseURI = baseURI_;
+        _maxTokens = maxTokens_;
+        _price = price_;
+        _saleActive = true;
     }
-    
-    modifier saleIsOpen {
-        require(totalSupply() < _maxTokens, "Sale has already ended");
-        require(_saleActive == true, "Sale is not active");
+
+    // Only owner
+    modifier onlyOwner() {
+        require(msg.sender == owner(), "Only the contract owner can call this function");
         _;
     }
-    
-    function mint(uint256 numberOfTokens) public payable saleIsOpen {
-        require(numberOfTokens > 0, "You need to mint at least 1 NFT");
+
+    // Mint a single NFT
+    function mint() public payable {
+        require(_saleActive, "Sale has ended");
+        require(totalSupply() < _maxTokens, "Exceeds maximum NFT limit");
+        require(msg.value == _price, "Incorrect Ether value");
+
+        uint256 tokenId = totalSupply().add(1);
+        _safeMint(msg.sender, tokenId);
+
+        _totalSupply = _totalSupply.add(1);
+
+        emit NFTCreated(tokenId);
+    }
+
+    // Mint multiple NFTs at once
+    function bulkMint(uint256 numberOfTokens) public payable {
+        require(_saleActive, "Sale has ended");
         require(totalSupply().add(numberOfTokens) <= _maxTokens, "Exceeds maximum NFT limit");
-        require(msg.value >= _tokenPrice.mul(numberOfTokens), "Ether value sent is not correct");
-        
-        for (uint i = 0; i < numberOfTokens; i++) {
-            _safeMint(msg.sender, _tokenIdTracker);
-            _tokenIdTracker = _tokenIdTracker.add(1);
+        require(msg.value == _price.mul(numberOfTokens), "Incorrect Ether value");
+
+        for (uint256 i = 0; i < numberOfTokens; i++) {
+            uint256 tokenId = totalSupply().add(1);
+            _safeMint(msg.sender, tokenId);
+
+            _totalSupply = _totalSupply.add(1);
+
+            emit NFTCreated(tokenId);
         }
     }
-    
+
+    // Set base URI
+    function setBaseURI(string memory baseURI_) external onlyOwner {
+        _baseURI = baseURI_;
+    }
+
+    // Get base URI
     function _baseURI() internal view virtual override returns (string memory) {
         return _baseURI;
     }
-    
-    function setBaseURI(string memory _newBaseURI) external onlyOwner {
-        _baseURI = _newBaseURI;
-    }
-    
-    function startSale() external onlyOwner {
-        _saleActive = true;
-    }
-    
-    function stopSale() external onlyOwner {
+
+    // Pause sale
+    function pauseSale() external onlyOwner {
         _saleActive = false;
     }
-    
-    function withdraw() external onlyOwner {
-        payable(msg.sender).transfer(address(this).balance);
+
+    // Resume sale
+    function resumeSale() external onlyOwner {
+        _saleActive = true;
+    }
+
+    // End sale
+    function endSale() external onlyOwner {
+        _saleActive = false;
+    }
+
+    // Get max tokens
+    function getMaxTokens() public view returns (uint256) {
+        return _maxTokens;
+    }
+
+    // Get price
+    function getPrice() public view returns (uint256) {
+        return _price;
+    }
+
+    // Get sale status
+    function getSaleStatus() public view returns (bool) {
+        return _saleActive;
+    }
+
+    // Get total supply
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
     }
 }
