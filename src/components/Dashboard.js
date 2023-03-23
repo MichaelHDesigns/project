@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import Dashboard from './contracts/Dashboard.sol';
-import './src/css/Dashboard.css';
+import Dashboard from '../contracts/Dashboard.sol';
+import './Dashboard.css';
 
 function DashboardComponent(props) {
   const [dashboardContract, setDashboardContract] = useState(null);
