@@ -5,6 +5,8 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
 
 contract Marketplace is Ownable, ERC721Holder {
     struct Listing {
@@ -43,7 +45,7 @@ function ownerOf(uint256 tokenId) public view returns (address) {
         require(msg.value == _listings[tokenId].price, "Marketplace: incorrect price");
         address payable seller = payable(_listings[tokenId].seller);
         delete _listings[tokenId];
-        safeTransferFrom(seller, msg.sender, tokenId);
+        IERC721(ownerOf(tokenId)).safeTransferFrom(_listings[tokenId].seller, msg.sender, tokenId);
         seller.transfer(msg.value);
         emit NFTSold(tokenId, seller, msg.sender, msg.value);
     }
