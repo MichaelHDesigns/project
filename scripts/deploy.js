@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 
-const account = '0x114A612929c451417E28F0Bf9Af3C77c39fd1499'; // or initialize with null, if you want to set it later in your code
+const account = '0x114A612929c451417E28F0Bf9Af3C77c39fd1499';
 
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
@@ -10,9 +10,11 @@ async function main() {
   const tokenFactory = await hre.ethers.getContractFactory("AuthToken");
   const token = await tokenFactory.deploy();
   
-  const accountFactory = await hre.ethers.getContractFactory("Create_Account");
-  const account = await accountFactory.deploy(login.Address, profile.Address);
+  const loginFactory = await hre.ethers.getContractFactory("Login");
+  const login = await loginFactory.deploy(account.address);
 
+  const accountFactory = await hre.ethers.getContractFactory("Create_Account");
+  const account = await accountFactory.deploy(login.address, profile.address);
   
   const profileFactory = await hre.ethers.getContractFactory("Profile");
   const profile = await profileFactory.deploy(account.address);
@@ -25,28 +27,27 @@ async function main() {
 
   const marketplaceFactory = await hre.ethers.getContractFactory("Marketplace");
   const marketplace = await marketplaceFactory.deploy(account.address, token.address);
-  
-  const loginFactory = await hre.ethers.getContractFactory("Login");
-  const login = await loginFactory.deploy(account.address);
 
   const editprofileFactory = await hre.ethers.getContractFactory("ProfileEditor");
   const editprofile = await editprofileFactory.deploy(account.address, token.address);
 
   await token.deployed();
+  await login.deployed();
   await account.deployed();
   await profile.deployed();
   await nft.deployed();
   await dashboard.deployed();
   await marketplace.deployed();
-  await login.deployed();
+  await editprofile.deployed();
 
   console.log("Token deployed to:", token.address);
+  console.log("Login deployed to:", login.address);
   console.log("CreateAccount deployed to:", account.address);
+  console.log("Profile deployed to:", profile.address);
   console.log("CreateNFT deployed to:", nft.address);
   console.log("Dashboard deployed to:", dashboard.address);
-  console.log("Login deployed to:", login.address);
-  console.log("Profile deployed to:", profile.address);
   console.log("Marketplace deployed to:", marketplace.address);
+  console.log("ProfileEditor deployed to:", editprofile.address);
 }
 
 main().then(() => process.exit(0)).catch(error => {
