@@ -5,7 +5,7 @@ import "./Profile.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
-contract EditProfile {
+contract ProfileEditor {
     Profile public profileContract;
 
     constructor(Profile _profileContract) {
