@@ -1,37 +1,56 @@
-import React, { useState } from 'react';
-import { SimpleNFTContract, MultiNFTContract, CollectionNFTContract } from './contracts';
-import PinataUpload from './components/PinataUpload';
-import './src/css/CreateNFTPage.css';
-import Web3 from 'web3';
-
-// code that uses Web3 library goes here
+import { useState } from "react";
+import CreateNFT from "./contracts/CreateNFT.sol";
 
 function CreateNFTPage() {
-  const [contractType, setContractType] = useState("simple");
-  const [pinataApi, setPinataApi] = useState("");
-  const [pinataSecret, setPinataSecret] = useState("");
-  const [metadata, setMetadata] = useState("");
+  const [pinataApiKey, setPinataApiKey] = useState("");
+  const [pinataSecretApiKey, setPinataSecretApiKey] = useState("");
+  const [metadataHash, setMetadataHash] = useState("");
+  const [tokenURIs, setTokenURIs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleCreateNFT = async () => {
-    if (contractType === "simple") {
-      await SimpleNFTContract(pinataApi, pinataSecret, metadata);
-    } else if (contractType === "multi") {
-      await MultiNFTContract(pinataApi, pinataSecret, metadata);
-    } else if (contractType === "collection") {
-      await CollectionNFTContract(pinataApi, pinataSecret, metadata);
+    setIsLoading(true);
+    setError("");
+
+    const contract = new web3.eth.Contract(CreateNFT.abi, "YOUR_CONTRACT_ADDRESS");
+    const account = (await web3.eth.getAccounts())[0];
+
+    try {
+      await contract.methods.bulkMintNFT(account, tokenURIs).send({ from: account });
+      const metadata = contract.methods.generateMetadata(tokenURIs).call();
+      await contract.methods.uploadMetadataToPinata(metadata, pinataApiKey, pinataSecretApiKey).send({ from: account, value: web3.utils.toWei("0.1", "ether") });
+      const contentHash = await contract.methods.getContentHash().call();
+      setMetadataHash(contentHash);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error.message);
     }
   };
 
   return (
     <div>
       <h1>Create NFT</h1>
-      <select value={contractType} onChange={(e) => setContractType(e.target.value)}>
-        <option value="simple">Simple NFT</option>
-        <option value="multi">Multi NFT</option>
-        <option value="collection">Collection NFT</option>
-      </select>
-      <PinataUpload onApiChange={setPinataApi} onSecretChange={setPinataSecret} onMetadataChange={setMetadata} />
-      <button onClick={handleCreateNFT}>Create NFT</button>
+      <div>
+        <label htmlFor="pinataApiKey">Pinata API Key:</label>
+        <input id="pinataApiKey" type="text" value={pinataApiKey} onChange={(e) => setPinataApiKey(e.target.value)} />
+      </div>
+      <div>
+        <label htmlFor="pinataSecretApiKey">Pinata Secret API Key:</label>
+        <input id="pinataSecretApiKey" type="text" value={pinataSecretApiKey} onChange={(e) => setPinataSecretApiKey(e.target.value)} />
+      </div>
+      <div>
+        <label htmlFor="tokenURIs">Token URIs:</label>
+        <textarea id="tokenURIs" value={tokenURIs.join("\n")} onChange={(e) => setTokenURIs(e.target.value.split("\n"))} />
+      </div>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <button onClick={handleCreateNFT}>Create NFT</button>
+      )}
+      {error && <div>{error}</div>}
+      {metadataHash && <div>Metadata hash: {metadataHash}</div>}
     </div>
   );
 }
