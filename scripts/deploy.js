@@ -8,13 +8,12 @@ async function main() {
   const tokenFactory = await hre.ethers.getContractFactory("AuthToken");
   const token = await tokenFactory.deploy();
   
+  const accountFactory = await hre.ethers.getContractFactory("Create_Account");
+  const account = await accountFactory.deploy(token.address);
   
   const loginFactory = await hre.ethers.getContractFactory("Login");
   const login = await loginFactory.deploy(account.address);
 
-  const accountFactory = await hre.ethers.getContractFactory("Create_Account");
-  const account = await accountFactory.deploy(token.address);
-  
   const profileFactory = await hre.ethers.getContractFactory("Profile");
   const profile = await profileFactory.deploy(account.address);
 
@@ -26,7 +25,6 @@ async function main() {
 
   const marketplaceFactory = await hre.ethers.getContractFactory("Marketplace");
   const marketplace = await marketplaceFactory.deploy(account.address, token.address);
-  
   
   const editprofileFactory = await hre.ethers.getContractFactory("ProfileEditor");
   const editprofile = await editprofileFactory.deploy(account.address, token.address);
