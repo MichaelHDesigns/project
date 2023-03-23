@@ -11,13 +11,14 @@ async function main() {
   const token = await tokenFactory.deploy();
   
   const accountFactory = await hre.ethers.getContractFactory("Create_Account");
-  const account = await accountFactory.deploy(token.address);
+  const account = await accountFactory.deploy(loginAddress, profileAddress);
+
   
   const profileFactory = await hre.ethers.getContractFactory("Profile");
   const profile = await profileFactory.deploy(account.address);
 
-const nftFactory = await hre.ethers.getContractFactory("CreateNFT");
-const nft = await nftFactory.deploy(100, ethers.utils.parseEther("1"));
+  const nftFactory = await hre.ethers.getContractFactory("CreateNFT");
+  const nft = await nftFactory.deploy(100, ethers.utils.parseEther("1"));
 
   const dashboardFactory = await hre.ethers.getContractFactory("Dashboard");
   const dashboard = await dashboardFactory.deploy(account.address);
