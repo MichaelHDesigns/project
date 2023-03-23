@@ -5,13 +5,15 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
+ // const accountAddress = '0x114A612929c451417E28F0Bf9Af3C77c39fd1499'; // Initialize account with an address
   
   const tokenFactory = await hre.ethers.getContractFactory("AuthToken");
   const token = await tokenFactory.deploy();
   
   const accountFactory = await hre.ethers.getContractFactory("Create_Account");
   const login = await loginFactory.deploy(account.address);
-  const account = await accountFactory.deploy(login.address, profile.address);
+  const account = await accountFactory.deploy(login.address, profile.address, { from: deployer });
+
 
   const profileFactory = await hre.ethers.getContractFactory("Profile");
   const profile = await profileFactory.deploy(account.address);
