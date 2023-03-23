@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { CreateSingleNFT, CreateBulkNFT, CreateCollectionNFT } from "./contracts";
-import PinataUpload from "./components/PinataUpload";
+import React, { useState } from 'react';
+import { CreateSingleNFT, CreateBulkNFT, CreateCollectionNFT } from './contracts';
+import PinataUpload from './components/PinataUpload';
 import './src/css/CreateNFTPage.css';
 import Web3 from 'web3';
 
