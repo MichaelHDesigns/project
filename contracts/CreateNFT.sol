@@ -1,32 +1,30 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract CreateNFT is ERC721, Ownable {
+contract CreateNFT is ERC721URIStorage, Ownable {
+    using SafeMath for uint256;
 
-    string private _baseURI;
-    uint256 private _tokenCounter;
+    uint256 public tokenCounter;
 
-    constructor(string memory baseURI) ERC721("MyNFT", "MNFT") {
-        _baseURI = baseURI;
-        _tokenCounter = 0;
-    }
+    constructor() ERC721("NFT Marketplace", "NFTM") {}
 
-    function mintNFT(string memory tokenURI) external {
-        uint256 newTokenId = _tokenCounter;
+    function createToken(string memory tokenURI) public onlyOwner returns (uint256) {
+        uint256 newTokenId = tokenCounter.add(1);
         _safeMint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
-        _tokenCounter++;
+        tokenCounter = newTokenId;
+        return newTokenId;
     }
 
-    function setBaseURI(string memory newBaseURI) external onlyOwner {
-        _baseURI = newBaseURI;
+    function setBaseURI(string memory _newBaseURI) external onlyOwner {
+        _setBaseURI(_newBaseURI);
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
-        return _baseURI;
+        return "https://nft-marketplace.com/token/";
     }
 }
