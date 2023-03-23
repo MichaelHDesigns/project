@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import EditProfile from "./contracts/Edit_Profile.json";
+import EditProfile from "./contracts/ProfileEditor.json";
 
 const EditProfileForm = ({ provider, signer, address }) => {
   const [newName, setNewName] = useState("");
