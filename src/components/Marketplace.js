@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Marketplace } from './contracts/Marketplace.sol';
-import './src/css/Marketplace.css';
+import { Marketplace } from '../contracts/Marketplace.sol';
+import './Marketplace.css';
 
 function MarketplacePage() {
   const [tokenId, setTokenId] = useState("");
