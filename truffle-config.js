@@ -16,4 +16,13 @@ module.exports = {
       version: "0.8.0"
     }
   }
+  contracts_build_directory: './build/contracts',
+
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+
+  // Run deploy script
+  migrations_directory: './scripts',
+  migrations_file_extension: '.js'
 };
