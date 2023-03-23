@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Create_Account from '../contracts/Create_Account';
-import './src/css/CreateAccount.css';
+import './CreateAccount.css';
 import '../js/Login.jsx';
 
 function CreateAccount() {
