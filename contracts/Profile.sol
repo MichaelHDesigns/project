@@ -38,6 +38,16 @@ contract Profile {
         });
     }
 
+    function createProfile() external {
+        require(
+            authToken.balanceOf(msg.sender) > 0,
+            "Not authenticated"
+        );
+        require(userProfiles[msg.sender].walletAddress == address(0), "Profile already exists");
+
+        userProfiles[msg.sender].walletAddress = msg.sender;
+    }
+
     function getProfile(address walletAddress)
         external
         view
