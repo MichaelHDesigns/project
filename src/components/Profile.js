@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
-import ProfileContract from '../contracts/Profile.sol';
-import './Profile.css';
 
 const Profile = ({ address }) => {
   const [profileImage, setProfileImage] = useState('');
@@ -15,11 +12,11 @@ const Profile = ({ address }) => {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(ProfileContract.address, ProfileContract.abi, signer);
+        const contract = new ethers.Contract(process.env.REACT_APP_PROFILE_ADDRESS, process.env.REACT_APP_PROFILE_ABI, signer);
 
         const profile = await contract.getProfile(address);
 
-        setProfileImage(profile.profileImage);
+        setProfileImage(profile.profileImageTokenId);
         setName(profile.name);
         setBio(profile.bio);
       } catch (err) {
@@ -35,7 +32,7 @@ const Profile = ({ address }) => {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(ProfileContract.address, ProfileContract.abi, signer);
+        const contract = new ethers.Contract(process.env.REACT_APP_PROFILE_ADDRESS, process.env.REACT_APP_PROFILE_ABI, signer);
 
         await contract.burnSAT();
         alert('Your SAT has been burned successfully.');
@@ -47,18 +44,19 @@ const Profile = ({ address }) => {
   };
 
   return (
-    <div>
-      <h2>Profile</h2>
-      <p>This is your profile page.</p>
-      <Link to="/edit_profile"><button>Edit Profile</button></Link>
-    </div>
-    <br><br>
-    <div>
-      <img src={`https://ipfs.io/ipfs/${profileImage}`} alt="Profile" />
-      <h1>{name}</h1>
-      <p>{bio}</p>
-      <button onClick={handleBurnSAT}>Burn SAT</button>
-    </div>
+    <>
+      <div>
+        <h2>Profile</h2>
+        <p>This is your profile page.</p>
+        <Link to="/edit_profile"><button>Edit Profile</button></Link>
+      </div>
+      <div>
+        <img src={`https://ipfs.io/ipfs/${profileImage}`} alt="Profile" />
+        <h1>{name}</h1>
+        <p>{bio}</p>
+        <button onClick={handleBurnSAT}>Burn SAT</button>
+      </div>
+    </>
   );
 };
 
