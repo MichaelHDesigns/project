@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import EditProfile from '../contracts/Edit_Profile.json';
+import ProfileEditor from '../contracts/ProfileEditor.json';
 import './EditProfile.css';
 
 
@@ -16,15 +16,15 @@ const EditProfileForm = ({ provider, signer, address }) => {
     const init = async () => {
       // Load contract address and ABI
       const network = await provider.getNetwork();
-      const contractNetworks = EditProfile.networks;
+      const contractNetworks = ProfileEditor.networks;
       const deployedNetwork = contractNetworks[network.chainId.toString()];
       setContractAddress(deployedNetwork.address);
-      setContractAbi(EditProfile.abi);
+      setContractAbi(ProfileEditor.abi);
 
       // Initialize contract instance
       const instance = new ethers.Contract(
         deployedNetwork.address,
-        EditProfile.abi,
+        ProfileEditor.abi,
         signer
       );
       setContractInstance(instance);
@@ -53,7 +53,7 @@ const EditProfileForm = ({ provider, signer, address }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const tx = await contractInstance.editProfile(newName, newBio, newImageHash);
+    const tx = await contractInstance.updateProfile(newName, newBio, newImageHash);
     await tx.wait();
   };
 
