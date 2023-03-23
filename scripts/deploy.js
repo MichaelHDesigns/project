@@ -9,7 +9,7 @@ async function main() {
     { name: "Login", args: [token.address] },
     { name: "Dashboard", args: [] },
     { name: "Create_Account", args: [token.address] },
-    { name: "Edit_Profile", args: [token.address] },
+    { name: "ProfileEditor", args: [token.address] },
     { name: "Profile", args: [token.address] },
     { name: "CreateNFT", args: [token.address] },
     { name: "Marketplace", args: [token.address] },
