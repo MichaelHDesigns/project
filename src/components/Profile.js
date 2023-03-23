@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
-import ProfileContract from './contracts/Profile.sol';
-import './src/css/Profile.css';
+import ProfileContract from '../contracts/Profile.sol';
+import './Profile.css';
 
 const Profile = ({ address }) => {
   const [profileImage, setProfileImage] = useState('');
