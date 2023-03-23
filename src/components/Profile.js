@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
 import ProfileContract from './contracts/Profile.sol';
 import './src/css/Profile.css';
