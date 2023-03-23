@@ -1,5 +1,7 @@
 import { useState } from "react";
-import CreateNFT from "./contracts/CreateNFT.sol";
+import CreateNFT from "../contracts/CreateNFT.sol";
+import './CreateNFTPage.css';
+
 
 function CreateNFTPage() {
   const [pinataApiKey, setPinataApiKey] = useState("");
