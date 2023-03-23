@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 function PinataUpload({ onApiChange, onSecretChange, onMetadataChange }) {
   const [selectedFile, setSelectedFile] = useState(null);
