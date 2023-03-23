@@ -17,7 +17,7 @@ async function main() {
   const profile = await profileFactory.deploy(account.address);
 
 const nftFactory = await hre.ethers.getContractFactory("CreateNFT");
-const nft = await nftFactory.deploy(100, "1 ether");
+const nft = await nftFactory.deploy(100, ethers.utils.parseEther("1"));
 
   const dashboardFactory = await hre.ethers.getContractFactory("Dashboard");
   const dashboard = await dashboardFactory.deploy(account.address);
