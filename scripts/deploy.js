@@ -6,6 +6,7 @@ async function main() {
   const token = await hre.ethers.getContractFactory("AuthToken").deploy();
 
   const factories = [
+    { name: "Login", args: [token.address] },
     { name: "Dashboard", args: [] },
     { name: "Create_Account", args: [token.address] },
     { name: "Edit_Profile", args: [token.address] },
