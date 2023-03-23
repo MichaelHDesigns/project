@@ -1,21 +1,44 @@
-// SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
-import "./Profile.sol";
-import "./AuthToken.sol";
-
 contract Dashboard {
-    AuthToken public authToken;
-    Profile public profile;
-
-    constructor(address _authToken, address _profile) {
-        authToken = AuthToken(_authToken);
-        profile = Profile(_profile);
+    struct UserProfile {
+        string name;
+        string email;
+        string bio;
+        string profileImageUrl;
     }
 
-    function viewProfile() external view returns (string memory, address, uint256, string memory) {
-        require(authToken.balanceOf(msg.sender) > 0, "Not authenticated");
-        return profile.viewProfile(msg.sender);
+    mapping(address => UserProfile) private userProfiles;
+
+    event UserProfileUpdated(address indexed userAddress, string name, string email, string bio, string profileImageUrl);
+
+    function updateUserProfile(string memory name, string memory email, string memory bio, string memory profileImageUrl) public {
+        UserProfile storage userProfile = userProfiles[msg.sender];
+        userProfile.name = name;
+        userProfile.email = email;
+        userProfile.bio = bio;
+        userProfile.profileImageUrl = profileImageUrl;
+
+        emit UserProfileUpdated(msg.sender, name, email, bio, profileImageUrl);
+    }
+
+    function getUserAddress() public view returns (address) {
+        return msg.sender;
+    }
+
+    function getUserName() public view returns (string memory) {
+        return userProfiles[msg.sender].name;
+    }
+
+    function getUserEmail() public view returns (string memory) {
+        return userProfiles[msg.sender].email;
+    }
+
+    function getUserBio() public view returns (string memory) {
+        return userProfiles[msg.sender].bio;
+    }
+
+    function getProfileImageUrl() public view returns (string memory) {
+        return userProfiles[msg.sender].profileImageUrl;
     }
 }
