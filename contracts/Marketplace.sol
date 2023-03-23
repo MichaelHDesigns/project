@@ -20,7 +20,7 @@ contract Marketplace is Ownable {
     event NFTSold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price);
 
     function listNFT(uint256 tokenId, uint256 price) external {
-    require(msg.sender == ERC721.owner(tokenId), "Marketplace: must be owner to list NFT");
+    require(msg.sender == ERC721(owner()).ownerOf(tokenId), "Marketplace: must be owner to list NFT");
     _listings[tokenId] = Listing(tokenId, msg.sender, price, true);
     emit NFTListed(tokenId, msg.sender, price);
     }
