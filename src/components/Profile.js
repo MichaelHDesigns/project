@@ -48,7 +48,7 @@ const Profile = ({ address }) => {
       <div>
         <h2>Profile</h2>
         <p>This is your profile page.</p>
-        <Link to="/edit_profile"><button>Edit Profile</button></Link>
+        <Link to="/editprofile"><button>Edit Profile</button></Link>
       </div>
       <div>
         <img src={`https://ipfs.io/ipfs/${profileImage}`} alt="Profile" />
