@@ -76,4 +76,12 @@ contract Profile {
         // Logic to confirm burn
         return true;
     }
+
+    function setName(string memory newName) public {
+        require(
+            authToken.balanceOf(msg.sender) > 0,
+            "Not authenticated"
+        );
+        userProfiles[msg.sender].name = newName;
+    }
 }
