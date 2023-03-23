@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import { PinataSDK } from "@pinata/sdk";
+import "@pinata/sdk/contracts/Pinata.sol";
 
 contract CreateBulkNFT is ERC721 {
     using Counters for Counters.Counter;
@@ -14,14 +14,15 @@ contract CreateBulkNFT is ERC721 {
     string private pinataApiKey;
     string private pinataSecretApiKey;
 
-    // Pinata SDK object
-    PinataSDK private pinata;
+    // Pinata object
+    Pinata private pinata;
 
     constructor(string memory _pinataApiKey, string memory _pinataSecretApiKey) ERC721("BulkNFT", "BNFT") {
         pinataApiKey = _pinataApiKey;
         pinataSecretApiKey = _pinataSecretApiKey;
 
-        pinata = new PinataSDK({ apiKey: pinataApiKey, apiSecret: pinataSecretApiKey });
+        // Initialize Pinata object
+        pinata = new Pinata({apiKey: pinataApiKey, apiSecret: pinataSecretApiKey});
     }
 
     function mintBulkNFT(uint256 numNFTs, string[] calldata metadata) public {
