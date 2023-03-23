@@ -3,9 +3,8 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract CreateNFT is ERC721, Ownable {
+contract CreateNFT is ERC721 {
 
     string private baseURI;
     uint256 private tokenCounter;
@@ -28,5 +27,13 @@ contract CreateNFT is ERC721, Ownable {
 
     function _baseURI() internal view override returns (string memory) {
         return baseURI;
+    }
+
+    function tokenURI(uint256 _tokenId) public view override(ERC721) returns (string memory) {
+        return string(abi.encodePacked(baseURI, _tokenId.toString()));
+    }
+
+    function setTokenURI(uint256 _tokenId, string memory _tokenURI) external onlyOwner {
+        _setTokenURI(_tokenId, _tokenURI);
     }
 }
