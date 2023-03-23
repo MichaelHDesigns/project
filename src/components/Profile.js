@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
+import EditProfile from './EditProfile';
 
-const Profile = ({ address }) => {
+const Profile = ({ address, setLoggedIn }) => {
   const [profileImage, setProfileImage] = useState('');
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
@@ -55,6 +56,9 @@ const Profile = ({ address }) => {
         <h1>{name}</h1>
         <p>{bio}</p>
         <button onClick={handleBurnSAT}>Burn SAT</button>
+      </div>
+      <div>
+        <EditProfile setLoggedIn={setLoggedIn} />
       </div>
     </>
   );
