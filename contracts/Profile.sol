@@ -92,4 +92,12 @@ contract Profile {
         );
         userProfiles[msg.sender].bio = newBio;
     }
+
+    function setProfileImage(string memory ipfsHash) public {
+        require(
+            authToken.balanceOf(msg.sender) > 0,
+            "Not authenticated"
+        );
+        userProfiles[msg.sender].profileImageTokenId = uint256(keccak256(abi.encodePacked(ipfsHash)));
+    }
 }
