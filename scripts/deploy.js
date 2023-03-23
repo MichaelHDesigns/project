@@ -1,19 +1,17 @@
 const hre = require("hardhat");
 
-const account = '0x114A612929c451417E28F0Bf9Af3C77c39fd1499'; // or initialize with null, if you want to set it later in your code
-
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
 
   console.log("Deploying contracts with the account:", deployer.address);
 
+  const account = '0x114A612929c451417E28F0Bf9Af3C77c39fd1499'; // Initialize account with an address
+  
   const tokenFactory = await hre.ethers.getContractFactory("AuthToken");
   const token = await tokenFactory.deploy();
   
-  const loginFactory = await hre.ethers.getContractFactory("Login");
-  const login = await loginFactory.deploy(account.address);
-  
   const accountFactory = await hre.ethers.getContractFactory("Create_Account");
+  const login = await loginFactory.deploy(account.address);
   const account = await accountFactory.deploy(login.address, profile.address);
 
   const profileFactory = await hre.ethers.getContractFactory("Profile");
