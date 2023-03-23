@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import EditProfile from './contracts/Edit_Profile.json';
-import './src/css/EditProfile.css';
+import EditProfile from '../contracts/Edit_Profile.json';
+import './EditProfile.css';
 
 
 const EditProfileForm = ({ provider, signer, address }) => {
