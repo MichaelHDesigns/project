@@ -2,6 +2,7 @@ import { useState } from "react";
 import CreateNFT from "../contracts/CreateNFT.sol";
 import './CreateNFTPage.css';
 
+const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
 
 function CreateNFTPage() {
   const [pinataApiKey, setPinataApiKey] = useState("");
@@ -15,7 +16,7 @@ function CreateNFTPage() {
     setIsLoading(true);
     setError("");
 
-    const contract = new web3.eth.Contract(CreateNFT.abi, "YOUR_CONTRACT_ADDRESS");
+    const contract = new web3.eth.Contract(CreateNFT.abi, CONTRACT_ADDRESS);
     const account = (await web3.eth.getAccounts())[0];
 
     try {
