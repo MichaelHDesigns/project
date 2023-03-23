@@ -26,4 +26,8 @@ contract Create_Account is Ownable, Pausable {
         profile.createProfile();
         emit AccountCreated(user, username);
     }
+    
+    function doesAccountExist(address user) public view returns (bool) {
+    return login.isRegistered(user);
+}
 }
