@@ -18,7 +18,7 @@ function DashboardComponent(props) {
   useEffect(() => {
     async function setupDashboardContract() {
       const signer = provider.getSigner();
-      const dashboardContractAddress = '0x123...'; // Replace with actual contract address
+      const dashboardContractAddress = process.env.REACT_APP_DASHBOARD_CONTRACT_ADDRESS; // Use environment variable
       const dashboardContractABI = [{...}]; // Replace with actual contract ABI
       const dashboardContract = new ethers.Contract(dashboardContractAddress, dashboardContractABI, signer);
       setDashboardContract(dashboardContract);
