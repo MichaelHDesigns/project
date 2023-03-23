@@ -1,4 +1,4 @@
-  // SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -25,11 +25,11 @@ contract CreateNFT is ERC721 {
         }
     }
 
+    function totalSupply() public view returns (uint256) {
+        return ERC721.totalSupply();
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
         return "https://www.example.com/";
     }
-
-function totalSupply() public view returns (uint256) {
-    return super.totalSupply();
-}
 }
