@@ -5,7 +5,6 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const account = '0x114A612929c451417E28F0Bf9Af3C77c39fd1499'; // Initialize account with an address
   
   const tokenFactory = await hre.ethers.getContractFactory("AuthToken");
   const token = await tokenFactory.deploy();
