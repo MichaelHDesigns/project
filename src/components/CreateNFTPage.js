@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CreateNFT from "../contracts/CreateNFT.sol";
-import './CreateNFTPage.css';
+import "./CreateNFTPage.css";
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
 
