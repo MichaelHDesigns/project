@@ -10,6 +10,11 @@ contract Dashboard {
         nft = CreateNFT(nftAddress);
     }
 
+    function mintNFT(string memory tokenURI) external returns (uint256) {
+        uint256 newTokenId = nft.createNFT(tokenURI, msg.sender);
+        return newTokenId;
+    }
+
     function getOwnedTokens() external view returns (uint256[] memory) {
         return nft.tokensOfOwner(msg.sender);
     }
