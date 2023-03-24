@@ -1,78 +1,81 @@
 import { useState } from "react";
 import { ethers } from "ethers";
 import CreateNFT from "../abis/CreateNFT.json";
-
 import "./CreateNFTPage.css";
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
+const pinataApiUrl = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
 
 function CreateNFTPage() {
-  const [pinataApiKey, setPinataApiKey] = useState("");
-  const [pinataSecretApiKey, setPinataSecretApiKey] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [secretApiKey, setSecretApiKey] = useState("");
   const [tokenURIs, setTokenURIs] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [metadataHash, setMetadataHash] = useState("");
 
-  // Set up the Ethereum provider
   const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-  // Set up the CreateNFT smart contract
   const contract = new ethers.Contract(CONTRACT_ADDRESS, CreateNFT.abi, provider.getSigner());
 
   const handleCreateNFT = async () => {
-    setIsLoading(true);
+    setLoading(true);
     setError("");
 
     try {
-      // Bulk mint the NFTs
-      await contract.bulkMintNFT(tokenURIs);
+      let pinataResponseJson;
 
-      // Generate the metadata for the NFTs
-      const metadata = await contract.generateMetadata(tokenURIs);
+      if (tokenURIs.length === 1) {
+        const metadata = await contract.generateMetadata(tokenURIs[0]);
+        pinataResponseJson = await pinJSONToIPFS(metadata);
+      } else if (tokenURIs.length > 1) {
+        const metadata = await contract.generateMetadataForMultiple(tokenURIs);
+        pinataResponseJson = await pinJSONToIPFS(metadata);
+      } else {
+        throw new Error("Token URIs cannot be empty");
+      }
 
-      // Upload the metadata to Pinata
-      const pinataResponse = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          pinata_api_key: pinataApiKey,
-          pinata_secret_api_key: pinataSecretApiKey,
-        },
-        body: JSON.stringify(metadata),
-      });
-
-      const pinataResponseJson = await pinataResponse.json();
       if (!pinataResponseJson.IpfsHash) {
         throw new Error("Error uploading metadata to Pinata");
       }
 
-      // Save the metadata hash to state
       setMetadataHash(pinataResponseJson.IpfsHash);
-
-      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
       setError(error.message);
     }
+
+    setLoading(false);
+  };
+
+  const pinJSONToIPFS = async (json) => {
+    const response = await fetch(pinataApiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        pinata_api_key: apiKey,
+        pinata_secret_api_key: secretApiKey,
+      },
+      body: JSON.stringify(json),
+    });
+
+    return response.json();
   };
 
   return (
     <div>
       <h1>Create NFT</h1>
       <div>
-        <label htmlFor="pinataApiKey">Pinata API Key:</label>
-        <input id="pinataApiKey" type="text" value={pinataApiKey} onChange={(e) => setPinataApiKey(e.target.value)} />
+        <label htmlFor="apiKey">Pinata API Key:</label>
+        <input id="apiKey" type="text" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
       </div>
       <div>
-        <label htmlFor="pinataSecretApiKey">Pinata Secret API Key:</label>
-        <input id="pinataSecretApiKey" type="text" value={pinataSecretApiKey} onChange={(e) => setPinataSecretApiKey(e.target.value)} />
+        <label htmlFor="secretApiKey">Pinata Secret API Key:</label>
+        <input id="secretApiKey" type="text" value={secretApiKey} onChange={(e) => setSecretApiKey(e.target.value)} />
       </div>
       <div>
         <label htmlFor="tokenURIs">Token URIs:</label>
         <textarea id="tokenURIs" value={tokenURIs.join("\n")} onChange={(e) => setTokenURIs(e.target.value.split("\n"))} />
       </div>
-      {isLoading ? (
+      {loading ? (
         <div>Loading...</div>
       ) : (
         <button onClick={handleCreateNFT}>Create NFT</button>
