@@ -1,22 +1,23 @@
-// SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract Collections is ERC721, Ownable {
+    using Strings for uint256;
+
     struct Collection {
         string name;
         string symbol;
         string[] metadataFields;
+        mapping(uint256 => bytes) tokenImages;
     }
 
     Collection[] public collections;
 
     mapping(uint256 => string[]) private tokenMetadata;
-    mapping(uint256 => address) private collectionContracts;
 
     constructor() ERC721("Collections", "COLL") {}
 
@@ -29,29 +30,53 @@ contract Collections is ERC721, Ownable {
         return newCollectionId;
     }
 
-    function addTokenMetadata(uint256 _tokenId, string[] memory _metadata) public {
+    function addTokenMetadataAndImage(uint256 _tokenId, string[] memory _metadata, bytes memory _image) public {
         require(_isApprovedOrOwner(msg.sender, _tokenId), "Collections: caller is not owner nor approved");
 
-        address collectionContract = collectionContracts[_tokenId];
-        require(collectionContract != address(0), "Collections: invalid collection contract");
+        Collection storage collection = collections[_tokenId];
+        require(_metadata.length == collection.metadataFields.length, "Collections: incorrect number of metadata fields");
 
-        CollectionData(collectionContract).addTokenMetadata(_tokenId, _metadata);
-    }
+        // Convert the token ID to a string for use in the image URI
+        string memory tokenIdString = _tokenId.toString();
 
-    function setCollectionContract(uint256 _tokenId, address _collectionContract) public onlyOwner {
-        require(_collectionContract != address(0), "Collections: invalid collection contract");
-        collectionContracts[_tokenId] = _collectionContract;
+        // Set the image URI
+        string memory imageUri = string(abi.encodePacked("data:image/jpeg;base64,", Base64.encode(_image)));
+
+        // Store the image on-chain
+        collection.tokenImages[_tokenId] = _image;
+
+        // Store the metadata on-chain
+        string memory metadataUri = createMetadataUri(_metadata, imageUri);
+        tokenMetadata[_tokenId] = _metadata;
+
+        emit URI(metadataUri, _tokenId);
     }
 
     function tokenMetadataByIndex(uint256 _tokenId, uint256 _index) public view returns (string memory) {
-        address collectionContract = collectionContracts[_tokenId];
-        require(collectionContract != address(0), "Collections: invalid collection contract");
+        require(_index < collections[_tokenId].metadataFields.length, "Collections: index out of range");
 
-        return CollectionData(collectionContract).tokenMetadataByIndex(_tokenId, _index);
+        return tokenMetadata[_tokenId][_index];
     }
-}
 
-abstract contract CollectionData {
-    function addTokenMetadata(uint256 _tokenId, string[] memory _metadata) public virtual;
-    function tokenMetadataByIndex(uint256 _tokenId, uint256 _index) public view virtual returns (string memory);
+    function tokenImage(uint256 _tokenId) public view returns (bytes memory) {
+        return collections[_tokenId].tokenImages[_tokenId];
+    }
+
+    function createMetadataUri(string[] memory _metadata, string memory _imageUri) private returns (string memory) {
+        string[] memory parts = new string[](_metadata.length * 2 + 4);
+        parts[0] = "{";
+        parts[1] = string(abi.encodePacked('"image":"', _imageUri, '",'));
+
+        for (uint256 i = 0; i < _metadata.length; i++) {
+            parts[i * 2 + 2] = string(abi.encodePacked('"', collections[msg.tokenId].metadataFields[i], '":"', _metadata[i], '",'));
+        }
+
+        // Remove the trailing comma
+        parts[parts.length - 2] = "}";
+        parts[parts.length - 1] = "";
+
+        string memory json = string(abi.encodePacked(parts));
+
+        return json;
+    }
 }
