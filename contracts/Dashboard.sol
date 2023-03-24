@@ -3,12 +3,6 @@ pragma solidity ^0.8.0;
 
 import "./CreateNFT.sol";
 
-struct TokenDetails {
-    string uri;
-    uint256 price;
-    bool forSale;
-}
-
 contract Dashboard {
     CreateNFT private nft;
 
