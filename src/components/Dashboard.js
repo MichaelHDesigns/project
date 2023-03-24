@@ -11,6 +11,7 @@ function DashboardComponent(props) {
   const [userEmail, setUserEmail] = useState('');
   const [userBio, setUserBio] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState('');
+  const [mintType, setMintType] = useState('');
 
   // Set up the Ethereum provider
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -41,6 +42,30 @@ function DashboardComponent(props) {
     fetchUserProfile();
   }, [dashboardContract]);
 
+  // Function to mint a token
+  async function mintToken() {
+    if (dashboardContract) {
+      let tx;
+      switch (mintType) {
+        case 'single':
+          tx = await dashboardContract.mintSingleToken();
+          break;
+        case 'bulk':
+          tx = await dashboardContract.mintBulkToken();
+          break;
+        case 'collection':
+          tx = await dashboardContract.createCollection();
+          break;
+        default:
+          return;
+      }
+      // Wait for the transaction to be mined
+      await tx.wait();
+      // Update the user's profile information
+      fetchUserProfile();
+    }
+  }
+
   return (
     <div>
       <h1>Welcome to your Dashboard, {userName}!</h1>
@@ -48,7 +73,16 @@ function DashboardComponent(props) {
       <p>Email: {userEmail}</p>
       <p>Bio: {userBio}</p>
       <img src={profileImageUrl} alt="Profile" />
-      <a href="/profile">View Profile</a>
+      <div>
+        <label htmlFor="mintType">Select Token Type:</label>
+        <select name="mintType" id="mintType" onChange={(e) => setMintType(e.target.value)}>
+          <option value="">Select</option>
+          <option value="single">Single Token</option>
+          <option value="bulk">Bulk Token</option>
+          <option value="collection">Collection</option>
+        </select>
+        <button onClick={mintToken}>Mint Token</button>
+      </div>
     </div>
   );
 }
