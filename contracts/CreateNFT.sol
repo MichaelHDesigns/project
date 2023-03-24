@@ -109,5 +109,5 @@ function uint2str(uint256 _i) internal pure returns (string memory) {
     }
     return string(bstr);
 }
-
+}
 event PinataMetadataUploaded(string contentHash);
