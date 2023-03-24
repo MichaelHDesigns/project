@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import Dashboard from '../../Dashboard.sol';
-import dashboardABI from '../abis/Dashboard.json'; // Import the ABI JSON file
+import dashboardABI from '../abis/Dashboard.json';
 import './Dashboard.css';
 
 function DashboardComponent(props) {
@@ -19,8 +19,8 @@ function DashboardComponent(props) {
   useEffect(() => {
     async function setupDashboardContract() {
       const signer = provider.getSigner();
-      const dashboardContractAddress = process.env.REACT_APP_DASHBOARD_CONTRACT_ADDRESS; // Use environment variable
-      const dashboardContract = new ethers.Contract(dashboardContractAddress, dashboardABI, signer); // Use the imported ABI JSON file
+      const dashboardContractAddress = process.env.REACT_APP_DASHBOARD_CONTRACT_ADDRESS;
+      const dashboardContract = new ethers.Contract(dashboardContractAddress, dashboardABI, signer);
       setDashboardContract(dashboardContract);
     }
     setupDashboardContract();
@@ -41,6 +41,27 @@ function DashboardComponent(props) {
     fetchUserProfile();
   }, [dashboardContract]);
 
+  // Mint a single NFT
+  async function mintSingleNFT() {
+    if (dashboardContract) {
+      await dashboardContract.mintSingleNFT();
+    }
+  }
+
+  // Mint multiple NFTs at once
+  async function mintBulkNFTs() {
+    if (dashboardContract) {
+      await dashboardContract.mintBulkNFTs();
+    }
+  }
+
+  // Create a new NFT collection
+  async function createNFTCollection() {
+    if (dashboardContract) {
+      await dashboardContract.createNFTCollection();
+    }
+  }
+
   return (
     <div>
       <h1>Welcome to your Dashboard, {userName}!</h1>
@@ -48,6 +69,9 @@ function DashboardComponent(props) {
       <p>Email: {userEmail}</p>
       <p>Bio: {userBio}</p>
       <img src={profileImageUrl} alt="Profile" />
+      <button onClick={mintSingleNFT}>Mint Single NFT</button>
+      <button onClick={mintBulkNFTs}>Mint Bulk NFTs</button>
+      <button onClick={createNFTCollection}>Create NFT Collection</button>
     </div>
   );
 }
