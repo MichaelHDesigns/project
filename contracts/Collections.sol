@@ -48,22 +48,30 @@ contract Collections is ERC721, Ownable {
 function createMetadataUri(string[] memory _metadata) private returns (string memory) {
     string[] memory parts = new string[](_metadata.length * 2 + 1);
     parts[0] = "data:application/json;base64,";
+
     for (uint256 i = 0; i < _metadata.length; i++) {
         parts[i * 2 + 1] = collections[msg.tokenId].metadataFields[i];
         parts[i * 2 + 2] = _metadata[i];
     }
-    string memory json = string(abi.encodePacked("{", string(abi.encodePacked(parts)), "}")));
+
+    string memory json = string(abi.encodePacked("{", string(abi.encodePacked(parts)), "}"));
 
     // Pin JSON to IPFS using Pinata
-    // To use Pinata, you will need to create an account on their website (https://pinata.cloud/)
-    // and obtain an API key and API secret, which you can then use in the code below.
-    // Note: Be sure to keep your API secret secure, and do not hardcode it into your code!
     string memory pinataApiKey = "<your_pinata_api_key>";
     string memory pinataApiSecret = "<your_pinata_api_secret>";
 
-    // Read the JSON into bytes and pin the file to IPFS
+    // Encode the JSON as bytes
     bytes memory jsonBytes = bytes(json);
-    string memory result = pinFileToIPFS(pinataApiKey, pinataApiSecret, jsonBytes);
+
+    // Set the pinata options
+    string memory pinataOptions = '{"pinataMetadata": {"name": "Collections metadata"}}';
+
+    // Make the API request
+    (bool success, bytes memory data) = address(0x8BCCBEF7f1E1Df277859A2Db030f45E7aB9e45Df).call(abi.encodeWithSignature("pinFileToIPFS(string,string,bytes,string)", pinataApiKey, pinataApiSecret, jsonBytes, pinataOptions));
+    require(success, "Failed to pin JSON to IPFS");
+
+    // Decode the response
+    string memory result = abi.decode(data, (string));
 
     return result;
 }
