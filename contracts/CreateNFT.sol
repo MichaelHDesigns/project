@@ -1,25 +1,53 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "./CreateNFT.sol";
 
-contract CreateNFT is ERC721URIStorage {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
-    address private _owner;
+contract Dashboard {
+    CreateNFT private nft;
 
-    constructor(address owner) ERC721("MyNFT", "MNFT") {
-        _owner = owner;
+    constructor(address nftAddress) {
+        nft = CreateNFT(nftAddress);
     }
 
-    function createNFT(string memory tokenURI) public returns (uint256) {
-        require(msg.sender == _owner, "Only owner can create NFTs");
-        _tokenIds.increment();
-        uint256 newNFTId = _tokenIds.current();
-        _mint(msg.sender, newNFTId);
-        _setTokenURI(newNFTId, tokenURI);
-        return newNFTId;
+    function getOwnedTokens() external view returns (uint256[] memory) {
+        return nft.tokensOfOwner(msg.sender);
+    }
+
+    function tokenIdsOwnedByOwner(address owner) external view returns (uint256[] memory) {
+        uint256[] memory tokenIds = nft.tokensOfOwner(owner);
+        uint256 count = 0;
+
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            if (nft.ownerOf(tokenIds[i]) == owner) {
+                count++;
+            }
+        }
+
+        uint256[] memory result = new uint256[](count);
+        count = 0;
+
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            if (nft.ownerOf(tokenIds[i]) == owner) {
+                result[count] = tokenIds[i];
+                count++;
+            }
+        }
+
+        return result;
+    }
+
+    struct TokenDetails {
+        string uri;
+        uint256 price;
+        bool forSale;
+    }
+
+    function getTokenDetails(uint256 tokenId) external view returns (TokenDetails memory) {
+        return nft.getTokenDetails(tokenId);
+    }
+
+    function getContractAddress() external view returns (address) {
+        return address(nft);
     }
 }
