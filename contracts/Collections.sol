@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
-import "https://api.pinata.cloud/pinning/pinJSONToIPFS";
+import "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
 contract Collections is ERC721, Ownable {
     struct Collection {
@@ -45,30 +45,26 @@ contract Collections is ERC721, Ownable {
         return tokenMetadata[_tokenId][_index];
     }
 
-    function createMetadataUri(string[] memory _metadata) private returns (string memory) {
-        string[] memory parts = new string[](_metadata.length * 2 + 1);
-        parts[0] = "data:application/json;base64,";
-        for (uint256 i = 0; i < _metadata.length; i++) {
-            parts[i * 2 + 1] = collections[msg.tokenId].metadataFields[i];
-            parts[i * 2 + 2] = _metadata[i];
-        }
-        string memory json = string(abi.encodePacked("{", string(abi.encodePacked(parts)), "}")));
-
-        return pinJsonToIPFS(json);
+function createMetadataUri(string[] memory _metadata) private returns (string memory) {
+    string[] memory parts = new string[](_metadata.length * 2 + 1);
+    parts[0] = "data:application/json;base64,";
+    for (uint256 i = 0; i < _metadata.length; i++) {
+        parts[i * 2 + 1] = collections[msg.tokenId].metadataFields[i];
+        parts[i * 2 + 2] = _metadata[i];
     }
+    string memory json = string(abi.encodePacked("{", string(abi.encodePacked(parts)), "}")));
 
-    function pinJsonToIPFS(string memory _json) private returns (string memory) {
-        bytes memory jsonBytes = bytes(_json);
-        bytes memory resultHash = new bytes(46);
+    // Pin JSON to IPFS using Pinata
+    // To use Pinata, you will need to create an account on their website (https://pinata.cloud/)
+    // and obtain an API key and API secret, which you can then use in the code below.
+    // Note: Be sure to keep your API secret secure, and do not hardcode it into your code!
+    string memory pinataApiKey = "<your_pinata_api_key>";
+    string memory pinataApiSecret = "<your_pinata_api_secret>";
 
-        // Pin JSON to IPFS using Pinata
-        // To use Pinata, you will need to create an account on their website (https://pinata.cloud/)
-        // and obtain an API key and API secret, which you can then use in the code below.
-        // Note: Be sure to keep your API secret secure, and do not hardcode it into your code!
-        string memory pinataApiKey = "<your_pinata_api_key>";
-        string memory pinataApiSecret = "<your_pinata_api_secret>";
-        pinJSONToIPFS(pinataApiKey, pinataApiSecret, jsonBytes, resultHash);
+    // Read the JSON into bytes and pin the file to IPFS
+    bytes memory jsonBytes = bytes(json);
+    string memory result = pinFileToIPFS(pinataApiKey, pinataApiSecret, jsonBytes);
 
-        return string(resultHash);
-    }
+    return result;
+}
 }
