@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Create_Account from '../contracts/Create_Account';
+import Create_Account from '../../contracts/Create_Account';
+import CreateAccountContract from "../abis/Create_Account.json";
 import './CreateAccount.css';
 import '../js/Login.jsx';
 
