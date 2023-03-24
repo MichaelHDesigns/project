@@ -4,21 +4,16 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract SingleMint is ERC721URIStorage {
+contract CustomMint is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    string private pinataApiKey;
-    string private pinataSecretApiKey;
     string private apiUrl = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
-    constructor(string memory name, string memory symbol, string memory apiKey, string memory secretApiKey) ERC721(name, symbol) {
-        pinataApiKey = apiKey;
-        pinataSecretApiKey = secretApiKey;
-    }
+    constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
 
-    function mintNFT(string memory tokenURI) external returns (uint256) {
-        string memory contentHash = uploadToPinata(tokenURI);
+    function mintNFT(string memory tokenURI, string memory apiKey, string memory secretApiKey) external returns (uint256) {
+        string memory contentHash = uploadToPinata(tokenURI, apiKey, secretApiKey);
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
         _mint(msg.sender, newTokenId);
@@ -26,7 +21,7 @@ contract SingleMint is ERC721URIStorage {
         return newTokenId;
     }
 
-    function uploadToPinata(string memory tokenURI) private returns (string memory) {
+    function uploadToPinata(string memory tokenURI, string memory apiKey, string memory secretApiKey) private returns (string memory) {
         string memory boundary = "----FormBoundary";
         string memory contentHash = generateContentHash(tokenURI);
 
@@ -40,8 +35,8 @@ contract SingleMint is ERC721URIStorage {
 
         string memory headers = string(abi.encodePacked(
             'Content-Type: multipart/form-data; boundary=', boundary, "\r\n",
-            'pinata_api_key: ', pinataApiKey, "\r\n",
-            'pinata_secret_api_key: ', pinataSecretApiKey, "\r\n",
+            'pinata_api_key: ', apiKey, "\r\n",
+            'pinata_secret_api_key: ', secretApiKey, "\r\n",
             'Content-Length: ', uint2str(requestBody.length), "\r\n"
         ));
 
