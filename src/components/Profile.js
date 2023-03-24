@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
 import EditProfile from './EditProfile';
 import axios from 'axios';
+import ProfileABI from './ProfileABI.json'; // import the ABI file here
 
 const Profile = ({ address, setLoggedIn }) => {
   const [profileImage, setProfileImage] = useState('');
@@ -14,7 +15,7 @@ const Profile = ({ address, setLoggedIn }) => {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(process.env.REACT_APP_PROFILE_ADDRESS, process.env.REACT_APP_PROFILE_ABI, signer);
+        const contract = new ethers.Contract(process.env.REACT_APP_PROFILE_ADDRESS, ProfileABI, signer);
 
         const profile = await contract.getProfile(address);
 
@@ -34,7 +35,7 @@ const Profile = ({ address, setLoggedIn }) => {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(process.env.REACT_APP_PROFILE_ADDRESS, process.env.REACT_APP_PROFILE_ABI, signer);
+        const contract = new ethers.Contract(process.env.REACT_APP_PROFILE_ADDRESS, ProfileABI, signer);
 
         await contract.burnSAT();
         alert('Your SAT has been burned successfully.');
@@ -62,7 +63,7 @@ const Profile = ({ address, setLoggedIn }) => {
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contract = new ethers.Contract(process.env.REACT_APP_PROFILE_ADDRESS, process.env.REACT_APP_PROFILE_ABI, signer);
+      const contract = new ethers.Contract(process.env.REACT_APP_PROFILE_ADDRESS, ProfileABI, signer);
 
       await contract.setProfileImage(response.data.IpfsHash);
 
