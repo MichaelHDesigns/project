@@ -61,3 +61,26 @@
   color: red;
   margin-bottom: 16px;
 }
+
+.dashboard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  background-color: #f2f2f2;
+}
+
+.dashboard-nav h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.dashboard-nav a {
+  color: #4CAF50;
+  font-weight: bold;
+  text-decoration: none;
+}
