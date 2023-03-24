@@ -1,46 +1,49 @@
-.create-nft-page {
+.CreateNFTPage {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.create-nft-page h1 {
-  margin-bottom: 1rem;
+.CreateNFTPage label {
+  margin: 10px;
 }
 
-.create-nft-page input,
-.create-nft-page textarea {
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border: 1px solid gray;
-  border-radius: 0.25rem;
-  width: 100%;
+.CreateNFTPage input,
+.CreateNFTPage textarea {
+  padding: 5px;
+  margin: 10px;
+  width: 400px;
+  height: 100px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-.create-nft-page button {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  background-color: #007bff;
+.CreateNFTPage button {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #4CAF50;
   color: white;
+  border-radius: 5px;
   border: none;
   cursor: pointer;
 }
 
-.create-nft-page button:disabled {
-  background-color: gray;
-  cursor: not-allowed;
+.CreateNFTPage button:hover {
+  background-color: #3e8e41;
 }
 
-.create-nft-page .loading-spinner {
-  margin-top: 1rem;
+.CreateNFTPage .loading {
+  margin: 10px;
+  font-size: 18px;
 }
 
-.create-nft-page .error-message {
+.CreateNFTPage .error {
+  margin: 10px;
   color: red;
-  margin-top: 1rem;
+  font-size: 18px;
 }
 
-.create-nft-page .metadata-hash {
-  margin-top: 1rem;
+.CreateNFTPage .metadata-hash {
+  margin: 10px;
+  font-size: 18px;
 }
