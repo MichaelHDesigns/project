@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
-import { Marketplace } from '../contracts/Marketplace.sol';
+import { Marketplace } from '../../contracts/Marketplace.sol';
+import Marketplace from '../abis/Marketplace.json';
+import './Marketplace.css';
+
+const contractAddress = '0x...'; // replace with your contract address
+
+function MarketplacePage() {
+  const [tokenId, setTokenId] = useState("");
+  const [price, setPrice] = useState("");
+
+  // initialize contract instance
+  const marketplaceContract = new web3.eth.Contract(
+   
+
 import './Marketplace.css';
 
 function MarketplacePage() {
