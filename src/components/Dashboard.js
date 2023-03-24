@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import Dashboard from '../contracts/Dashboard.sol';
+import Dashboard from '../../Dashboard.sol';
 import dashboardABI from '../abis/Dashboard.json'; // Import the ABI JSON file
 import './Dashboard.css';
 
