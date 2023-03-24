@@ -1,6 +1,6 @@
 import { useState } from "react";
-import CreateNFT from "../../contracts/CreateNFT.sol";
-import CreateNFTContract from "../abis/CreateNFT.json";
+import { ethers } from "ethers";
+import CreateNFT from "../abis/CreateNFT.json";
 
 import "./CreateNFTPage.css";
 
@@ -9,24 +9,47 @@ const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
 function CreateNFTPage() {
   const [pinataApiKey, setPinataApiKey] = useState("");
   const [pinataSecretApiKey, setPinataSecretApiKey] = useState("");
-  const [metadataHash, setMetadataHash] = useState("");
   const [tokenURIs, setTokenURIs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [metadataHash, setMetadataHash] = useState("");
+
+  // Set up the Ethereum provider
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+  // Set up the CreateNFT smart contract
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, CreateNFT.abi, provider.getSigner());
 
   const handleCreateNFT = async () => {
     setIsLoading(true);
     setError("");
 
-    const contract = new web3.eth.Contract(CreateNFT.abi, CONTRACT_ADDRESS);
-    const account = (await web3.eth.getAccounts())[0];
-
     try {
-      await contract.methods.bulkMintNFT(account, tokenURIs).send({ from: account });
-      const metadata = contract.methods.generateMetadata(tokenURIs).call();
-      await contract.methods.uploadMetadataToPinata(metadata, pinataApiKey, pinataSecretApiKey).send({ from: account, value: web3.utils.toWei("0.1", "ether") });
-      const contentHash = await contract.methods.getContentHash().call();
-      setMetadataHash(contentHash);
+      // Bulk mint the NFTs
+      await contract.bulkMintNFT(tokenURIs);
+
+      // Generate the metadata for the NFTs
+      const metadata = await contract.generateMetadata(tokenURIs);
+
+      // Upload the metadata to Pinata
+      const pinataResponse = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          pinata_api_key: pinataApiKey,
+          pinata_secret_api_key: pinataSecretApiKey,
+        },
+        body: JSON.stringify(metadata),
+      });
+
+      const pinataResponseJson = await pinataResponse.json();
+      if (!pinataResponseJson.IpfsHash) {
+        throw new Error("Error uploading metadata to Pinata");
+      }
+
+      // Save the metadata hash to state
+      setMetadataHash(pinataResponseJson.IpfsHash);
+
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
