@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import Dashboard from '../contracts/Dashboard.sol';
+import dashboardABI from '../abis/Dashboard.json'; // Import the ABI JSON file
 import './Dashboard.css';
 
 function DashboardComponent(props) {
@@ -19,8 +20,7 @@ function DashboardComponent(props) {
     async function setupDashboardContract() {
       const signer = provider.getSigner();
       const dashboardContractAddress = process.env.REACT_APP_DASHBOARD_CONTRACT_ADDRESS; // Use environment variable
-      const dashboardContractABI = [{...}]; // Replace with actual contract ABI
-      const dashboardContract = new ethers.Contract(dashboardContractAddress, dashboardContractABI, signer);
+      const dashboardContract = new ethers.Contract(dashboardContractAddress, dashboardABI, signer); // Use the imported ABI JSON file
       setDashboardContract(dashboardContract);
     }
     setupDashboardContract();
