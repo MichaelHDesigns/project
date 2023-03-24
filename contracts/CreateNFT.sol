@@ -1,27 +1,25 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./Create_Account.sol";
 
 contract CreateNFT is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    address private _owner;
 
-    Create_Account private _createAccount;
-
-    constructor(address createAccountAddress) ERC721("MyNFT", "NFT") {
-        _createAccount = Create_Account(createAccountAddress);
+    constructor(address owner) ERC721("MyNFT", "MNFT") {
+        _owner = owner;
     }
 
-    function createNFT(address recipient) public returns (uint256) {
-        require(_createAccount.doesAccountExist(msg.sender), "Sender does not have a registered account");
+    function createNFT(string memory tokenURI) public returns (uint256) {
+        require(msg.sender == _owner, "Only owner can create NFTs");
         _tokenIds.increment();
-
-        uint256 newItemId = _tokenIds.current();
-        _mint(recipient, newItemId);
-
-        return newItemId;
+        uint256 newNFTId = _tokenIds.current();
+        _mint(msg.sender, newNFTId);
+        _setTokenURI(newNFTId, tokenURI);
+        return newNFTId;
     }
 }
