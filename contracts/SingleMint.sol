@@ -1,23 +1,28 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./CreateNFT.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract SingleMint {
-    CreateNFT private nft;
+contract SingleMint is ERC721URIStorage {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+
     string private pinataApiKey;
     string private pinataSecretApiKey;
     string private apiUrl = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
-    constructor(address nftAddress, string memory apiKey, string memory secretApiKey) {
-        nft = CreateNFT(nftAddress);
+    constructor(string memory name, string memory symbol, string memory apiKey, string memory secretApiKey) ERC721(name, symbol) {
         pinataApiKey = apiKey;
         pinataSecretApiKey = secretApiKey;
     }
 
     function mintNFT(string memory tokenURI) external returns (uint256) {
         string memory contentHash = uploadToPinata(tokenURI);
-        uint256 newTokenId = nft.createNFT(contentHash, msg.sender);
+        _tokenIds.increment();
+        uint256 newTokenId = _tokenIds.current();
+        _mint(msg.sender, newTokenId);
+        _setTokenURI(newTokenId, contentHash);
         return newTokenId;
     }
 
