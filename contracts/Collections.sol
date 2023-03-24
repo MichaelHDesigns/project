@@ -1,21 +1,30 @@
-import "./CreateNFT.sol";
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+// Import necessary contracts from OpenZeppelin
+
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";                                    
 
 contract Collections {
-    CreateNFT private nft;
+    address private nftAddress;
     string private pinataApiKey;
     string private pinataSecretApiKey;
     string private apiUrl = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
-    constructor(address nftAddress, string memory _pinataApiKey, string memory _pinataSecretApiKey) {
-        nft = CreateNFT(nftAddress);
+    constructor(address _nftAddress, string memory _pinataApiKey, string memory _pinataSecretApiKey) {
+        nftAddress = _nftAddress;
         pinataApiKey = _pinataApiKey;
         pinataSecretApiKey = _pinataSecretApiKey;
     }
 
     function createCollection(string memory collectionName, string memory collectionDescription, string memory collectionImage) external returns (uint256) {
         string memory tokenURI = _createTokenURI(collectionName, collectionDescription, collectionImage);
-        uint256 newTokenId = nft.createNFT(tokenURI, msg.sender);
-        return newTokenId;
+        (bool success, bytes memory data) = nftAddress.staticcall(
+            abi.encodeWithSignature("createNFT(string,address)", tokenURI, msg.sender)
+        );
+        require(success, "Failed to create NFT");
+        return abi.decode(data, (uint256));
     }
 
     function _createTokenURI(string memory collectionName, string memory collectionDescription, string memory collectionImage) private returns (string memory) {
@@ -48,6 +57,8 @@ contract Collections {
         string memory boundary = "----UploadBoundary----";
         string memory contentType = "multipart/form-data; boundary=";
 
+        bytes memory requestBody = abi.encodePacked(
+            "--", boundary, "\
         bytes memory requestBody = abi.encodePacked(
             "--", boundary, "\r\n",
             'Content-Disposition: form-data; name="file"; filename="', fileName, '"\"\r\n",
