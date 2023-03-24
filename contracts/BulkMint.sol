@@ -1,29 +1,38 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract SingleMint is ERC721URIStorage {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+contract BulkMint {
+    using Strings for uint256;
 
+    address private admin;
     string private pinataApiKey;
     string private pinataSecretApiKey;
     string private apiUrl = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
-    constructor(string memory name, string memory symbol, string memory apiKey, string memory secretApiKey) ERC721(name, symbol) {
-        pinataApiKey = apiKey;
-        pinataSecretApiKey = secretApiKey;
+    event BulkMinted(uint256[] tokenIds);
+    event PinataMetadataUploaded(string contentHash);
+
+    constructor(string memory _apiKey, string memory _secretApiKey) {
+        admin = msg.sender;
+        pinataApiKey = _apiKey;
+        pinataSecretApiKey = _secretApiKey;
     }
 
-    function mintNFT(string memory tokenURI) external returns (uint256) {
-        string memory contentHash = uploadToPinata(tokenURI);
-        _tokenIds.increment();
-        uint256 newTokenId = _tokenIds.current();
-        _mint(msg.sender, newTokenId);
-        _setTokenURI(newTokenId, contentHash);
-        return newTokenId;
+    function bulkMint(string[] memory _tokenURIs, address _recipient) external {
+        require(msg.sender == admin, "Only admin can call this function");
+
+        uint256 length = _tokenURIs.length;
+        uint256[] memory tokenIds = new uint256[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            string memory tokenURI = _tokenURIs[i];
+            string memory contentHash = uploadToPinata(tokenURI);
+            tokenIds[i] = uint256(keccak256(abi.encodePacked(block.number, i)));
+        }
+
+        emit BulkMinted(tokenIds);
     }
 
     function uploadToPinata(string memory tokenURI) private returns (string memory) {
@@ -42,7 +51,7 @@ contract SingleMint is ERC721URIStorage {
             'Content-Type: multipart/form-data; boundary=', boundary, "\r\n",
             'pinata_api_key: ', pinataApiKey, "\r\n",
             'pinata_secret_api_key: ', pinataSecretApiKey, "\r\n",
-            'Content-Length: ', uint2str(requestBody.length), "\r\n"
+            'Content-Length: ', uint256(requestBody.length).toString(), "\r\n"
         ));
 
         (bool success, bytes memory returnData) = address(0x0000000000000000000000000000000000000001).call{gas: 3000000, value: msg.value}(
@@ -57,8 +66,9 @@ contract SingleMint is ERC721URIStorage {
 
     function generateContentHash(string memory tokenURI) private pure returns (string memory) {
         bytes32 contentHash = keccak256(bytes(tokenURI));
-        return Base58.encode(bytes28(contentHash));
+        return uint256(contentHash).toHexString(28);
     }
+
 
     function uint2str(uint256 _i) private pure returns (string memory) {
         if (_i == 0) {
@@ -82,5 +92,4 @@ contract SingleMint is ERC721URIStorage {
         return string(bstr);
     }
 
-    event PinataMetadataUploaded(string contentHash);
 }
