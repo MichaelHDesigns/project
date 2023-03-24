@@ -26,11 +26,6 @@ async function main() {
 
   console.log("Dashboard deployed to:", dashboard.address);
 
-  const nft = await ethers.getContractFactory("CreateNFT")
-    .deploy(account.address);
-
-  console.log("CreateNFT deployed to:", nft.address);
-
   const marketplace = await ethers.getContractFactory("Marketplace")
     .deploy(account.address, token.address);
 
@@ -46,16 +41,35 @@ async function main() {
 
   console.log("Login deployed to:", login.address);
 
-// Write addresses to .env file
+  // Deploy SingleMint contract
+  const singleMint = await ethers.getContractFactory("SingleMint")
+    .deploy(account.address);
+
+  console.log("SingleMint deployed to:", singleMint.address);
+
+  // Deploy BulkMint contract
+  const bulkMint = await ethers.getContractFactory("BulkMint")
+    .deploy(account.address);
+
+  console.log("BulkMint deployed to:", bulkMint.address);
+
+  // Deploy Collections contract
+  const collections = await ethers.getContractFactory("Collections")
+    .deploy(account.address);
+
+  console.log("Collections deployed to:", collections.address);
+
+  // Write addresses to .env file
   fs.writeFileSync(".env", `REACT_APP_ACCOUNT_ADDRESS=${account.address}\n`);
   fs.appendFileSync(".env", `REACT_APP_TOKEN_ADDRESS=${token.address}\n`);
   fs.appendFileSync(".env", `REACT_APP_PROFILE_ADDRESS=${profile.address}\n`);
   fs.appendFileSync(".env", `REACT_APP_DASHBOARD_ADDRESS=${dashboard.address}\n`);
-  fs.appendFileSync(".env", `REACT_APP_NFT_ADDRESS=${nft.address}\n`);
   fs.appendFileSync(".env", `REACT_APP_MARKETPLACE_ADDRESS=${marketplace.address}\n`);
   fs.appendFileSync(".env", `REACT_APP_PROFILE_EDITOR_ADDRESS=${editprofile.address}\n`);
   fs.appendFileSync(".env", `REACT_APP_LOGIN_ADDRESS=${login.address}\n`);
-
+  fs.appendFileSync(".env", `REACT_APP_SINGLE_MINT_ADDRESS=${singleMint.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_BULK_MINT_ADDRESS=${bulkMint.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_COLLECTIONS_ADDRESS=${collections.address}\n`);
 }
 
 main()
