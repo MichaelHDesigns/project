@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CreateNFT from "../../contracts/CreateNFT.sol";
-import CreateNFTContract from "../abis/Create_Account.json";
+import CreateNFTContract from "../abis/CreateNFT.json";
 
 import "./CreateNFTPage.css";
 
