@@ -1,42 +1,29 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./CreateNFT.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract BulkMint {
-    CreateNFT private nftContract;
+contract SingleMint is ERC721URIStorage {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+
     string private pinataApiKey;
     string private pinataSecretApiKey;
     string private apiUrl = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
-    address private admin;
-
-    event BulkMinted(uint256[] tokenIds);
-
-    constructor(address _nftAddress, string memory _apiKey, string memory _secretApiKey) {
-        nftContract = CreateNFT(_nftAddress);
-        pinataApiKey = _apiKey;
-        pinataSecretApiKey = _secretApiKey;
-        admin = msg.sender;
+    constructor(string memory name, string memory symbol, string memory apiKey, string memory secretApiKey) ERC721(name, symbol) {
+        pinataApiKey = apiKey;
+        pinataSecretApiKey = secretApiKey;
     }
 
-    function bulkMint(
-        string[] memory _tokenURIs,
-        address _recipient
-    ) external {
-        require(msg.sender == admin, "Only admin can call this function");
-
-        uint256 length = _tokenURIs.length;
-        uint256[] memory tokenIds = new uint256[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            string memory tokenURI = _tokenURIs[i];
-            string memory contentHash = uploadToPinata(tokenURI);
-            uint256 tokenId = nftContract.createNFT(contentHash, _recipient);
-            tokenIds[i] = tokenId;
-        }
-
-        emit BulkMinted(tokenIds);
+    function mintNFT(string memory tokenURI) external returns (uint256) {
+        string memory contentHash = uploadToPinata(tokenURI);
+        _tokenIds.increment();
+        uint256 newTokenId = _tokenIds.current();
+        _mint(msg.sender, newTokenId);
+        _setTokenURI(newTokenId, contentHash);
+        return newTokenId;
     }
 
     function uploadToPinata(string memory tokenURI) private returns (string memory) {
@@ -72,6 +59,7 @@ contract BulkMint {
         bytes32 contentHash = keccak256(bytes(tokenURI));
         return Base58.encode(bytes28(contentHash));
     }
+
     function uint2str(uint256 _i) private pure returns (string memory) {
         if (_i == 0) {
             return "0";
