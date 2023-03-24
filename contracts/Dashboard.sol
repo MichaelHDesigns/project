@@ -93,4 +93,11 @@ contract Dashboard {
     function getUserNfts() public view returns (uint256[] memory) {
         return userNfts[msg.sender];
     }
+    function getTokenMetadata(uint256 tokenId) public view returns (string memory) {
+    return _createNft.tokenURI(tokenId);
+}
+
+function setTokenMetadata(uint256 tokenId, string memory tokenURI) public {
+    _createNft.setTokenURI(tokenId, tokenURI);
+}
 }
