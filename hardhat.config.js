@@ -19,7 +19,10 @@ module.exports = {
 
  
   solidity: "0.8.0",
- 
+
+   artifacts: {
+      path: "./src/abis",
+    },
 
   mocha: {
     timeout: 300000, // 300 seconds max
