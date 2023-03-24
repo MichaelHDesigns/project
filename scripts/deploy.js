@@ -1,4 +1,5 @@
 const { ethers } = require("hardhat");
+const fs = require("fs");
 
 async function main() {
   const [deployer] = await ethers.getSigners();
@@ -6,50 +7,61 @@ async function main() {
   console.log("Deploying contracts with the account:", deployer.address);
 
   // Deploy Create_Account contract
-  const accountFactory = await ethers.getContractFactory("Create_Account");
-  const account = await accountFactory.deploy();
-  await account.deployed();
+  const account = await ethers.getContractFactory("Create_Account").deploy();
+
   console.log("Create_Account deployed to:", account.address);
 
   // Deploy other contracts that depend on Create_Account
-  const tokenFactory = await ethers.getContractFactory("AuthToken");
-  const token = await tokenFactory.deploy();
-  await token.deployed();
+  const token = await ethers.getContractFactory("AuthToken").deploy();
+
   console.log("AuthToken deployed to:", token.address);
 
-  const profileFactory = await ethers.getContractFactory("Profile");
-  const profile = await profileFactory.deploy(account.address);
-  await profile.deployed();
+  const profile = await ethers.getContractFactory("Profile")
+    .deploy(account.address);
+
   console.log("Profile deployed to:", profile.address);
 
-  const dashboardFactory = await ethers.getContractFactory("Dashboard");
-  const dashboard = await dashboardFactory.deploy(account.address);
-  await dashboard.deployed();
+  const dashboard = await ethers.getContractFactory("Dashboard")
+    .deploy(account.address);
+
   console.log("Dashboard deployed to:", dashboard.address);
 
-  const nftFactory = await ethers.getContractFactory("CreateNFT");
-  const nft = await nftFactory.deploy(account.address);
-  await nft.deployed();
+  const nft = await ethers.getContractFactory("CreateNFT")
+    .deploy(account.address);
+
   console.log("CreateNFT deployed to:", nft.address);
 
-  const marketplaceFactory = await ethers.getContractFactory("Marketplace");
-  const marketplace = await marketplaceFactory.deploy(account.address, token.address);
-  await marketplace.deployed();
+  const marketplace = await ethers.getContractFactory("Marketplace")
+    .deploy(account.address, token.address);
+
   console.log("Marketplace deployed to:", marketplace.address);
 
-  const editprofileFactory = await ethers.getContractFactory("ProfileEditor");
-  const editprofile = await editprofileFactory.deploy(account.address, token.address);
-  await editprofile.deployed();
+  const editprofile = await ethers.getContractFactory("ProfileEditor")
+    .deploy(account.address, token.address);
+
   console.log("ProfileEditor deployed to:", editprofile.address);
 
-  const loginFactory = await ethers.getContractFactory("Login");
-  const login = await loginFactory.deploy(account.address, token.address);
-  await login.deployed();
+  const login = await ethers.getContractFactory("Login")
+    .deploy(account.address, token.address);
+
   console.log("Login deployed to:", login.address);
+
+  // Write addresses to .env file
+  fs.writeFileSync(".env", `ACCOUNT_ADDRESS=${account.address}\n`);
+  fs.appendFileSync(".env", `TOKEN_ADDRESS=${token.address}\n`);
+  fs.appendFileSync(".env", `PROFILE_ADDRESS=${profile.address}\n`);
+  fs.appendFileSync(".env", `DASHBOARD_ADDRESS=${dashboard.address}\n`);
+  fs.appendFileSync(".env", `NFT_ADDRESS=${nft.address}\n`);
+  fs.appendFileSync(".env", `MARKETPLACE_ADDRESS=${marketplace.address}\n`);
+  fs.appendFileSync(".env", `PROFILE_EDITOR_ADDRESS=${editprofile.address}\n`);
+  fs.appendFileSync(".env", `LOGIN_ADDRESS=${login.address}\n`);
 }
 
 main()
-  .then(() => process.exit(0))
+  .then(() => {
+    console.log("Contract deployment successful.");
+    process.exit(0);
+  })
   .catch(error => {
     console.error(error);
     process.exit(1);
