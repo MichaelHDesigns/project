@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./CreateNFT.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract Dashboard {
     struct UserProfile {
