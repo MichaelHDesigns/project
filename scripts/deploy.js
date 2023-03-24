@@ -46,15 +46,16 @@ async function main() {
 
   console.log("Login deployed to:", login.address);
 
-  // Write addresses to .env file
-  fs.writeFileSync(".env", `ACCOUNT_ADDRESS=${account.address}\n`);
-  fs.appendFileSync(".env", `TOKEN_ADDRESS=${token.address}\n`);
-  fs.appendFileSync(".env", `PROFILE_ADDRESS=${profile.address}\n`);
-  fs.appendFileSync(".env", `DASHBOARD_ADDRESS=${dashboard.address}\n`);
-  fs.appendFileSync(".env", `NFT_ADDRESS=${nft.address}\n`);
-  fs.appendFileSync(".env", `MARKETPLACE_ADDRESS=${marketplace.address}\n`);
-  fs.appendFileSync(".env", `PROFILE_EDITOR_ADDRESS=${editprofile.address}\n`);
-  fs.appendFileSync(".env", `LOGIN_ADDRESS=${login.address}\n`);
+// Write addresses to .env file
+  fs.writeFileSync(".env", `REACT_APP_ACCOUNT_ADDRESS=${account.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_TOKEN_ADDRESS=${token.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_PROFILE_ADDRESS=${profile.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_DASHBOARD_ADDRESS=${dashboard.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_NFT_ADDRESS=${nft.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_MARKETPLACE_ADDRESS=${marketplace.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_PROFILE_EDITOR_ADDRESS=${editprofile.address}\n`);
+  fs.appendFileSync(".env", `REACT_APP_LOGIN_ADDRESS=${login.address}\n`);
+
 }
 
 main()
