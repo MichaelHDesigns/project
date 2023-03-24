@@ -40,8 +40,7 @@ contract CreateNFT is ERC721 {
         _safeMint(recipient, newItemId);
         _setTokenURI(newItemId, metadata);
     }
-
-function generateMetadata(string[] memory tokenURIs) private returns (string memory) {
+function generateMetadata(string[] memory tokenURIs) public pure returns (string memory) {
     string memory metadata = "";
     metadata = string(abi.encodePacked('{"name": "NFT Collection", "description": "A collection of NFTs", "image": "', tokenURIs[0], '", "attributes": ['));
     for (uint256 i = 0; i < tokenURIs.length; i++) {
@@ -53,6 +52,7 @@ function generateMetadata(string[] memory tokenURIs) private returns (string mem
     metadata = string(abi.encodePacked(metadata, ']}'));
     return metadata;
 }
+
 
 function uploadMetadataToPinata(string memory metadata, string memory pinataApiKey, string memory pinataSecretApiKey) public {
     string memory apiUrl = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
