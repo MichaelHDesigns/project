@@ -1,4 +1,4 @@
-import { abi } from "../abis/Collections.json";
+import { abi } from "../../abis/Collections.json";
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { getWeb3 } from "./utils.js";
@@ -47,4 +47,29 @@ export async function createCollection(name, description) {
   const collectionId = receipt.events[0].args[0].toNumber();
 
   return collectionId;
+}
+
+export async function addNFT(contractAddress, tokenId, description, imageFile) {
+  const { account } = useWeb3React();
+  if (!account) {
+    throw new Error("Please connect your wallet.");
+  }
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const contract = new ethers.Contract(collectionsAddress, abi, signer);
+
+  // Convert image file to base64 string
+  const reader = new FileReader();
+  reader.readAsDataURL(imageFile);
+  const imageStringPromise = new Promise((resolve) => {
+    reader.onload = () => {
+      resolve(reader.result.toString().split(",")[1]);
+    };
+  });
+  const imageString = await imageStringPromise;
+
+  // Call addNFT function on Collections contract
+  const transaction = await contract.addNFT(contractAddress, tokenId, description, imageString);
+  await transaction.wait();
 }
