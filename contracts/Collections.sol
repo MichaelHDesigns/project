@@ -2,10 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract Collections is Ownable {
+contract Collections is ERC721Holder, Ownable {
     using Strings for uint256;
 
     struct NFT {
@@ -42,5 +45,19 @@ contract Collections is Ownable {
         require(collections[msg.sender][_tokenId].length > 0, "Collections: no NFTs in collection");
 
         return string(abi.encodePacked(_baseURI(), _contractAddress, "/", _tokenId.toString(), ".json"));
+    }
+
+    function mintNFT(address _contractAddress, uint256 _tokenId, string memory _tokenURI) external returns (uint256) {
+        require(_contractAddress != address(0), "Collections: contract address is zero");
+        IERC721Metadata nft = IERC721Metadata(_contractAddress);
+        require(nft.ownerOf(_tokenId) == msg.sender, "Collections: not owner of token");
+        require(bytes(nft.tokenURI(_tokenId)).length == 0, "Collections: token already exists");
+
+        nft.safeMint(msg.sender, _tokenId);
+        nft.setTokenURI(_tokenId, _tokenURI);
+
+        addNFT(_contractAddress, _tokenId, "", _tokenURI);
+
+        return _tokenId;
     }
 }
