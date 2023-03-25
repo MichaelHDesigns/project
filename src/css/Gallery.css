@@ -8,18 +8,19 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  color: white;
+  color: #000;
 }
 
 .button {
-  background-color: #b862ff;
-  color: white;
+  background-color: #fff;
+  color: #000;
   border-radius: 20px;
   padding: 10px 20px;
   margin-top: 20px;
   font-weight: bold;
   text-transform: none;
-  box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+  box-shadow: 7px 7px 20px #2e2e2e,
+              -7px -7px 20px #3d3d3d;
 }
 
 .gallery {
@@ -35,9 +36,10 @@ body {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 30px;
-  box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+  box-shadow: 7px 7px 20px #2e2e2e,
+              -7px -7px 20px #3d3d3d;
   text-align: center;
 }
 
