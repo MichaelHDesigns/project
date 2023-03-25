@@ -3,8 +3,24 @@ import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { getWeb3 } from "./utils.js";
 import "../Collections.css";
+import ipfsHttpClient from "ipfs-http-client";
 
 const collectionsAddress = process.env.COLLECTIONS_ADDRESS;
+const ipfsEndpoint = "https://ipfs.infura.io:5001/api/v0";
+
+// Prompt user for Infura API Key and Project ID
+const infuraApiKey = prompt("Please enter your Infura API key:");
+const infuraProjectId = prompt("Please enter your Infura project ID:");
+
+const ipfs = ipfsHttpClient({
+  host: "ipfs.infura.io",
+  port: 5001,
+  protocol: "https",
+  headers: {
+    authorization: `Bearer ${infuraApiKey}`,
+  },
+  apiPath: `/api/${infuraProjectId}/`,
+});
 
 export async function getNFTs(account) {
   if (!account) {
@@ -60,17 +76,12 @@ export async function addNFT(contractAddress, tokenId, description, imageFile) {
   const signer = provider.getSigner();
   const contract = new ethers.Contract(collectionsAddress, abi, signer);
 
-  // Convert image file to base64 string
-  const reader = new FileReader();
-  reader.readAsDataURL(imageFile);
-  const imageStringPromise = new Promise((resolve) => {
-    reader.onload = () => {
-      resolve(reader.result.toString().split(",")[1]);
-    };
-  });
-  const imageString = await imageStringPromise;
+  // Save image to IPFS
+  const imageBuffer = await imageFile.arrayBuffer();
+  const imageResult = await ipfs.add(imageBuffer);
+  const imageUrl = "https://ipfs.infura.io/ipfs/" + imageResult.path;
 
   // Call addNFT function on Collections contract
-  const transaction = await contract.addNFT(contractAddress, tokenId, description, imageString);
+  const transaction = await contract.addNFT(contractAddress, tokenId, description, imageUrl);
   await transaction.wait();
 }
