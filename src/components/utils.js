@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import SingleMintContract from "../../abis/SingleMint.json";
+import SingleMint from "../../abis/SingleMint.json";
 
 const getWeb3 = async () => {
   if (window.ethereum) {
@@ -17,13 +17,13 @@ const getWeb3 = async () => {
   }
 };
 
-const getSingleMintContract = async (web3) => {
+const getSingleMint = async (web3) => {
   const networkId = await web3.eth.net.getId();
-  const deployedNetwork = SingleMintContract.networks[networkId];
+  const deployedNetwork = SingleMint.networks[networkId];
   return new web3.eth.Contract(
-    SingleMintContract.abi,
+    SingleMint.abi,
     deployedNetwork && deployedNetwork.address
   );
 };
 
-export { getWeb3, getSingleMintContract };
+export { getWeb3, getSingleMint };
