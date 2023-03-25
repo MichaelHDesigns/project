@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-3.0-only
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -13,18 +12,20 @@ contract Collections is Ownable {
         address contractAddress;
         uint256 tokenId;
         string description;
+        string imageURI;
     }
 
     mapping(address => mapping(uint256 => NFT[])) private collections;
 
-    function addNFT(address _contractAddress, uint256 _tokenId, string memory _description) external {
+    function addNFT(address _contractAddress, uint256 _tokenId, string memory _description, string memory _imageURI) external {
         require(_contractAddress != address(0), "Collections: contract address is zero");
         require(IERC721(_contractAddress).ownerOf(_tokenId) == msg.sender, "Collections: not owner of token");
 
         collections[msg.sender][_tokenId].push(NFT({
             contractAddress: _contractAddress,
             tokenId: _tokenId,
-            description: _description
+            description: _description,
+            imageURI: _imageURI
         }));
     }
 
