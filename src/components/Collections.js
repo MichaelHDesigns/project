@@ -1,67 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import Web3 from 'web3';
-import Collections from './contracts/Collections.json';
-import './Gallery.css';
+import { abi } from "../abis/Collections.json";
+import { useWeb3React } from "@web3-react/core";
+import { ethers } from "ethers";
 
-const Gallery = () => {
-  const [collections, setCollections] = useState([]);
-  const [loading, setLoading] = useState(true);
+const collectionsAddress = process.env.COLLECTIONS_ADDRESS;
 
-  useEffect(() => {
-    const loadCollections = async () => {
-      const web3 = new Web3(Web3.givenProvider || 'http://localhost:8545');
-      const networkId = await web3.eth.net.getId();
-      const contractAddress = Collections.networks[networkId].address;
-      const contractInstance = new web3.eth.Contract(Collections.abi, contractAddress);
-      
-      const userAccounts = await web3.eth.getAccounts();
-      const collectionIds = await contractInstance.methods.getCollectionIds(userAccounts[0]).call();
-      
-      const collectionData = await Promise.all(collectionIds.map(async (id) => {
-        const collection = await contractInstance.methods.getCollection(id).call();
-        return {
-          id: collection.id,
-          name: collection.name,
-          description: collection.description,
-          nfts: collection.nfts.map((nft) => {
-            return {
-              id: nft.id,
-              name: nft.name,
-              description: nft.description,
-              image: nft.image,
-            };
-          }),
-        };
-      }));
+export async function getNFTs(account) {
+  if (!account) {
+    return [];
+  }
 
-      setCollections(collectionData);
-      setLoading(false);
-    };
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const contract = new ethers.Contract(collectionsAddress, abi, provider);
 
-    loadCollections();
-  }, []);
+  const filter = contract.filters.CollectionCreated(account);
+  const events = await contract.queryFilter(filter);
 
-  return (
-    <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div>
-          {collections.map((collection) => (
-            <div key={collection.id}>
-              <h3>{collection.name}</h3>
-              <p>{collection.description}</p>
-              <div>
-                {collection.nfts.map((nft) => (
-                  <img key={nft.id} src={`https://ipfs.infura.io/ipfs/${nft.image}`} alt={nft.name} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+  const collections = await Promise.all(
+    events.map(async (event) => {
+      const collectionId = event.args[0];
+      const collection = await contract.collections(collectionId);
+      return {
+        id: collectionId.toNumber(),
+        name: collection.name,
+        description: collection.description,
+        owner: collection.owner,
+      };
+    })
   );
-};
 
-export default Gallery;
+  return collections;
+}
+
+export async function createCollection(name, description) {
+  const { account } = useWeb3React();
+  if (!account) {
+    throw new Error("Please connect your wallet.");
+  }
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const contract = new ethers.Contract(collectionsAddress, abi, signer);
+
+  const transaction = await contract.createCollection(name, description);
+  const receipt = await transaction.wait();
+  const collectionId = receipt.events[0].args[0].toNumber();
+
+  return collectionId;
+}
