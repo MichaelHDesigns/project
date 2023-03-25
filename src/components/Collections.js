@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import Collections from './contracts/Collections.json';
+import './Gallery.css';
 
 const Gallery = () => {
   const [collections, setCollections] = useState([]);
