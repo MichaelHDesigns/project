@@ -1,39 +1,45 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0-only
+
 pragma solidity ^0.8.0;
 
-import "@thirdweb-dev/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openZeppelin/contracts/utils/Strings.sol";
 
-contract Collections is ERC721Enumerable {
-    mapping (address => uint256[]) private _userCollections;
-    mapping (address => uint256) private _userCollectionCount;
+contract Collections is Ownable {
+    using Strings for uint256;
 
-    constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
-
-    function createCollection(string memory collectionName) public {
-        uint256 collectionId = totalSupply() + 1;
-        _mint(msg.sender, collectionId);
-        _setTokenURI(collectionId, collectionName);
-        _userCollections[msg.sender].push(collectionId);
-        _userCollectionCount[msg.sender]++;
+    struct NFT {
+        address contractAddress;
+        uint256 tokenId;
+        string description;
     }
 
-    function getCollectionCount(address user) public view returns (uint256) {
-        return _userCollectionCount[user];
+    mapping(address => mapping(uint256 => NFT[])) private collections;
+
+    function addNFT(address _contractAddress, uint256 _tokenId, string memory _description) external {
+        require(_contractAddress != address(0), "Collections: contract address is zero");
+        require(IERC721(_contractAddress).ownerOf(_tokenId) == msg.sender, "Collections: not owner of token");
+
+        collections[msg.sender][_tokenId].push(NFT({
+            contractAddress: _contractAddress,
+            tokenId: _tokenId,
+            description: _description
+        }));
     }
 
-    function getCollection(address user, uint256 index) public view returns (uint256) {
-        return _userCollections[user][index];
+    function getNFTs(address _userAddress, uint256 _tokenId) external view returns (NFT[] memory) {
+        return collections[_userAddress][_tokenId];
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, tokenId);
+    function setBaseURI(string memory _baseURI) external onlyOwner {
+        _setBaseURI(_baseURI);
     }
 
-    function _burn(uint256 tokenId) internal virtual override(ERC721, ERC721Enumerable) {
-        super._burn(tokenId);
-    }
+    function tokenURI(address _contractAddress, uint256 _tokenId) external view returns (string memory) {
+        require(_contractAddress != address(0), "Collections: contract address is zero");
+        require(collections[msg.sender][_tokenId].length > 0, "Collections: no NFTs in collection");
 
-    function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {
-        return super.tokenURI(tokenId);
+        return string(abi.encodePacked(_baseURI(), _contractAddress, "/", _tokenId.toString(), ".json"));
     }
 }
