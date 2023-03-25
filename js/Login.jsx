@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { getWeb3, getSingleMint } from '../utils/getWeb3';
 import AuthToken from '../contracts/AuthToken.sol';
+import './Login.css';
 
 const Login = ({ setLoggedIn }) => {
   const [email, setEmail] = useState("");
