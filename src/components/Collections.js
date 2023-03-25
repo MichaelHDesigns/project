@@ -2,6 +2,7 @@ import { abi } from "../../abis/Collections.json";
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { getWeb3 } from "./utils.js";
+import "../Collections.css";
 
 const collectionsAddress = process.env.COLLECTIONS_ADDRESS;
 
