@@ -1,66 +1,52 @@
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
+import { getWeb3, getSingleMint } from '../utils/getWeb3';
+import AuthToken from '../contracts/AuthToken.sol';
 
-import Web3 from 'web3';
-import AuthToken from '../contracts/AuthToken.json';
-
-function Login() {
-  const [loading, setLoading] = useState(false);
+const Login = ({ setLoggedIn }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
 
-  async function handleLogin() {
-    setLoading(true);
-    setError("");
-
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-      const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
+      const web3 = await getWeb3();
+      const singleMint = await getSingleMint(web3);
       const accounts = await web3.eth.getAccounts();
-
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = AuthToken.networks[networkId];
-      const contractAddress = deployedNetwork && deployedNetwork.address;
-
-      const contract = new web3.eth.Contract(AuthToken.abi, contractAddress);
-
-      await contract.methods.login().send({ from: accounts[0] });
-
-      setLoggedIn(true);
+      const auth = new web3.eth.Contract(AuthToken.abi, AuthToken.address);
+      const loginResult = await auth.methods.login(email, password).send({ from: accounts[0] });
+      if (loginResult.status) {
+        setLoggedIn(true);
+      } else {
+        setError("Invalid email or password");
+      }
     } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+      setError("Error while logging in");
+      console.log(error);
     }
-  }
+  };
 
-  if (loggedIn) {
-    return <div>You are logged in!</div>;
+  if (localStorage.getItem("authToken")) {
+    return <Redirect to="/dashboard" />;
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <h1>My Dapp Login</h1>
-      <button
-        style={{
-          margin: "16px",
-          padding: "8px 16px",
-          fontSize: "1rem",
-        }}
-        onClick={handleLogin}
-        disabled={loading}
-      >
-        {loading ? "Loading..." : "Log In"}
-      </button>
-      {error && <div style={{ color: "red" }}>{error}</div>}
+    <div className="login-container">
+      <h2>Login</h2>
+      <form onSubmit={handleLogin}>
+        <label htmlFor="email">Email:</label>
+        <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+
+        <label htmlFor="password">Password:</label>
+        <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+
+        <button type="submit">Login</button>
+      </form>
+
+      {error && <p className="error">{error}</p>}
     </div>
   );
-}
+};
 
 export default Login;
